@@ -672,14 +672,15 @@ export default function SolarERPApp({
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-[#FAFBFC] flex items-center justify-center p-6 relative overflow-hidden font-sans">
-        {/* Subtle Check Grid Background Pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:32px_32px] opacity-[0.6] pointer-events-none"></div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex items-center justify-center p-6 relative overflow-hidden font-sans">
+        {/* Decorative modern background elements (Light) */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+          <div className="absolute -top-24 -left-24 w-[500px] h-[500px] bg-blue-200/40 rounded-full blur-[100px]"></div>
+          <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-indigo-200/40 rounded-full blur-[100px]"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-sky-100/40 rounded-full blur-[120px]"></div>
+        </div>
 
-        <div className="absolute top-0 -left-4 w-96 h-96 bg-blue-50/50 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 -right-4 w-96 h-96 bg-indigo-50/50 rounded-full blur-3xl"></div>
-
-        <div className="w-full max-w-md bg-white border border-gray-200 rounded-3xl p-8 space-y-6 premium-shadow relative z-10 text-gray-700">
+        <div className="w-full max-w-md bg-white/80 backdrop-blur-xl border border-white/50 rounded-xl p-8 space-y-6 shadow-[0_8px_30px_rgb(0,0,0,0.08)] relative z-10 text-gray-700">
           <div className="text-center space-y-2">
             <div className="h-14 w-14 rounded-2xl bg-[#1E3A8A] flex items-center justify-center mx-auto shadow-md">
               <Landmark className="h-7 w-7 text-white" />
@@ -829,10 +830,16 @@ export default function SolarERPApp({
       </aside>
 
       {/* WORKSPACE AREA */}
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 flex flex-col overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50 relative">
+        {/* Decorative background blobs for inner pages */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+          <div className="absolute -top-24 -left-24 w-[500px] h-[500px] bg-blue-200/40 rounded-full blur-[100px]"></div>
+          <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-indigo-200/40 rounded-full blur-[100px]"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-sky-100/40 rounded-full blur-[120px]"></div>
+        </div>
 
-        {/* Top Header */}
-        <header className="h-16 border-b border-[#E5E7EB] bg-white flex items-center justify-between px-6 shrink-0">
+        {/* Top Header (bg-white ensures it stays solid) */}
+        <header className="h-16 border-b border-[#E5E7EB] bg-white flex items-center justify-between px-6 shrink-0 relative z-10">
           <div className="flex items-center gap-4">
             {/* Hamburger menu for mobile */}
             <button
@@ -918,7 +925,7 @@ export default function SolarERPApp({
         </header>
 
         {/* View Workspace */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-6 relative z-10">
 
           {/* DASHBOARD MODULE */}
           {activeTab === 'dashboard' && (
