@@ -15,7 +15,7 @@ export async function POST(request) {
 export async function PUT(request) {
   try {
     const { id, quoteData } = await request.json();
-    const { id: _, companyId: __, clientId: ___, createdAt: ____, updatedAt: _____, client: ______, ...updatePayload } = quoteData;
+    const { id: _, companyId: __, createdAt: ____, updatedAt: _____, client: ______, ...updatePayload } = quoteData;
     if (updatePayload.dueDate) {
       updatePayload.dueDate = new Date(updatePayload.dueDate);
     }

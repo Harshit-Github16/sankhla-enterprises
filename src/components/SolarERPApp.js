@@ -154,14 +154,18 @@ export default function SolarERPApp({
     structure: 'Standard Galvanized Structure',
     cable: 'Finolex 4 Sqmm DC',
     mc4: 'Standard MC4',
-    installationCharges: 25000,
-    transportationCharges: 5000,
-    otherCharges: 5000,
-    discount: 5000,
-    gstRate: 18,
-    projectCost: 350000,
-    dueDate: ''
+    installationCharges: 0,
+    transportationCharges: 0,
+    otherCharges: 0,
+    discount: 0,
+    gstRate: 5,
+    projectCost: 14285.71,
+    finalPrice: 15000,
+    dueDate: '',
+    items: []
   });
+
+  const [editingQuoteId, setEditingQuoteId] = useState(null);
 
   const [paymentForm, setPaymentForm] = useState({ clientId: '', amount: '', paymentMode: 'BANK_TRANSFER', notes: '' });
 
@@ -215,9 +219,8 @@ export default function SolarERPApp({
     const today = new Date();
     return quotations
       .filter(q => {
-        if (q.status !== 'APPROVED' && q.status !== 'DRAFT' && q.status !== 'SENT') return false; // Evaluate active invoices
-        if (!q.dueDate) return false;
-        return new Date(q.dueDate) < today;
+        if (q.status !== 'APPROVED') return false; // Only calculate overdue for approved quotations
+        return true; // Return all approved quotations regardless of due date so they can be tracked
       })
       .map(q => {
         // Find total payments collected for this specific client
@@ -356,69 +359,122 @@ export default function SolarERPApp({
         resolvedClient = clients.find(c => c.id === resolvedClientId);
       }
 
-      const response = await fetch('/api/quotations', {
-        method: 'POST',
+      const url = editingQuoteId ? '/api/quotations' : '/api/quotations';
+      const method = editingQuoteId ? 'PUT' : 'POST';
+      const bodyPayload = {
+        companyId: currentCompany.id,
+        ...(editingQuoteId && { id: editingQuoteId }),
+        quoteData: {
+          ...quoteForm,
+          clientId: resolvedClientId,
+          materialCost: quoteForm.projectCost,
+          labourCost: 0,
+          profit: 0,
+          panelWattage: 540,
+          panelQuantity: Math.ceil((parseFloat(quoteForm.capacity || 0) * 1000) / 540),
+          inverterModel: `${quoteForm.capacity}kW Inverter`,
+          acdb: `${quoteForm.capacity}kW ACDB Box`,
+          dcdb: `${quoteForm.capacity}kW DCDB Box`
+        }
+      };
+
+      const response = await fetch(url, {
+        method: method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          companyId: currentCompany.id,
-          quoteData: {
-            ...quoteForm,
-            clientId: resolvedClientId,
-            materialCost: quoteForm.projectCost,
-            labourCost: 0,
-            profit: 0,
-            panelWattage: 540,
-            panelQuantity: Math.ceil((parseFloat(quoteForm.capacity || 0) * 1000) / 540),
-            inverterModel: `${quoteForm.capacity}kW Inverter`,
-            acdb: `${quoteForm.capacity}kW ACDB Box`,
-            dcdb: `${quoteForm.capacity}kW DCDB Box`
-          }
-        })
+        body: JSON.stringify(bodyPayload)
       });
       const quoteData = await response.json();
       if (quoteData.error) throw new Error(quoteData.error);
-
-      quoteData.client = resolvedClient;
-
-      setQuotations(prev => [quoteData, ...prev]);
+      
+      if (editingQuoteId) {
+        setQuotations(quotations.map(q => q.id === quoteData.id ? quoteData : q));
+        addToast("Quotation updated successfully");
+      } else {
+        quoteData.client = resolvedClient;
+        setQuotations(prev => [quoteData, ...prev]);
+        addToast("Quotation created successfully");
+      }
       setIsQuoteModalOpen(false);
-
+      setEditingQuoteId(null);
+    } catch (err) {
+      console.error(err);
+      addToast("Failed to process quotation: " + err.message, "error");
+    } finally {
       setIsManualClient(false);
       setManualClientName('');
       setManualClientMobile('');
       setManualClientEmail('');
-
-      addToast("Quotation proposal generated.");
-    } catch (err) {
-      console.error(err);
-      addToast("Failed to create quotation: " + err.message, "error");
     }
   };
 
-  const handleDuplicateQuotation = async (quote) => {
+  const handleApproveQuotation = async (q) => {
+    if (!confirm("Are you sure you want to approve this quotation? It will become an active project and show in Overdue Payments.")) return;
     try {
+      const payload = {
+        id: q.id,
+        quoteData: { ...q, status: 'APPROVED' }
+      };
       const response = await fetch('/api/quotations', {
-        method: 'POST',
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          companyId: currentCompany.id,
-          quoteData: {
-            ...quote,
-            proposalNumber: `${quote.proposalNumber}-COPY-${Math.floor(100 + Math.random() * 900)}`
-          }
-        })
+        body: JSON.stringify(payload)
       });
-      const data = await response.json();
-      if (data.error) throw new Error(data.error);
-
-      data.client = quote.client;
-
-      setQuotations(prev => [data, ...prev]);
-      addToast("Quotation cloned successfully.");
+      if (!response.ok) throw new Error("Failed to approve quotation");
+      const updatedQuote = await response.json();
+      setQuotations(prev => prev.map(item => item.id === q.id ? updatedQuote : item));
+      addToast("Quotation approved successfully");
     } catch (err) {
       console.error(err);
-      addToast("Failed to clone quotation: " + err.message, "error");
+      addToast(err.message, "error");
     }
+  };
+
+  const handleDuplicateQuotation = (q) => {
+    setQuoteForm({
+      clientId: q.clientId,
+      capacity: q.capacity,
+      panelBrand: q.panelBrand,
+      inverterBrand: q.inverterBrand,
+      structure: q.structure,
+      cable: q.cable,
+      mc4: q.mc4,
+      installationCharges: 0,
+      transportationCharges: 0,
+      otherCharges: 0,
+      discount: 0,
+      gstRate: q.gstRate,
+      projectCost: q.materialCost,
+      finalPrice: q.grandTotal,
+      dueDate: q.dueDate ? q.dueDate.split('T')[0] : '',
+      items: q.items ? q.items.map(i => ({ description: i.description, amount: i.amount })) : []
+    });
+    setEditingQuoteId(null);
+    setIsManualClient(false);
+    setIsQuoteModalOpen(true);
+  };
+
+  const handleEditQuotation = (q) => {
+    setQuoteForm({
+      clientId: q.clientId,
+      capacity: q.capacity,
+      panelBrand: q.panelBrand,
+      inverterBrand: q.inverterBrand,
+      structure: q.structure,
+      cable: q.cable,
+      mc4: q.mc4,
+      installationCharges: 0,
+      transportationCharges: 0,
+      otherCharges: 0,
+      discount: 0,
+      gstRate: q.gstRate,
+      projectCost: q.materialCost,
+      finalPrice: q.grandTotal,
+      dueDate: q.dueDate ? q.dueDate.split('T')[0] : '',
+      items: q.items ? q.items.map(i => ({ description: i.description, amount: i.amount })) : []
+    });
+    setEditingQuoteId(q.id);
+    setIsManualClient(false);
+    setIsQuoteModalOpen(true);
   };
 
   const handleCreatePayment = async (e) => {
@@ -682,10 +738,9 @@ export default function SolarERPApp({
 
         <div className="w-full max-w-md bg-white/80 backdrop-blur-xl border border-white/50 rounded-xl p-8 space-y-6 shadow-[0_8px_30px_rgb(0,0,0,0.08)] relative z-10 text-gray-700">
           <div className="text-center space-y-2">
-            <div className="h-14 w-14 rounded-2xl bg-[#1E3A8A] flex items-center justify-center mx-auto shadow-md">
-              <Landmark className="h-7 w-7 text-white" />
+            <div className="flex justify-center mx-auto mb-4">
+              <img src="/logo.jpg" alt="Sankhla Enterprises Logo" className="h-28 object-contain drop-shadow-md" />
             </div>
-            <h2 className="text-xl font-extrabold text-gray-900 uppercase tracking-wider">SANKHLA ENTERPRISES</h2>
             <p className="text-xs text-gray-500">Enter credentials to access Solar ERP & CRM Dashboard</p>
           </div>
 
@@ -770,8 +825,8 @@ export default function SolarERPApp({
           {/* Header info */}
           <div className="p-5 border-b border-[#E5E7EB] flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl overflow-hidden bg-blue-50 border border-gray-100 flex items-center justify-center">
-                <Landmark className="h-5 w-5 text-blue-900" />
+              <div className="h-10 w-10 overflow-hidden flex items-center justify-center bg-white rounded-md">
+                <img src="/logo.jpg" alt="Logo" className="w-full h-full object-contain" />
               </div>
               <div className="flex flex-col">
                 <span className="font-semibold text-sm leading-tight">{currentCompany.name}</span>
@@ -971,15 +1026,15 @@ export default function SolarERPApp({
                       mc4: 'Standard MC4',
                       acdb: '10kW ACDB Box',
                       dcdb: '10kW DCDB Box',
-                      installationCharges: 25000,
-                      transportationCharges: 5000,
-                      otherCharges: 5000,
-                      discount: 5000,
-                      gstRate: 18,
-                      materialCost: 280000,
-                      labourCost: 35000,
-                      profit: 70000,
-                      dueDate: ''
+                      installationCharges: 0,
+                      transportationCharges: 0,
+                      otherCharges: 0,
+                      discount: 0,
+                      gstRate: 5,
+                      finalPrice: 15000,
+                      projectCost: 14285.71,
+                      dueDate: '',
+                      items: []
                     });
                     setIsManualClient(false);
                     setIsQuoteModalOpen(true);
@@ -1371,7 +1426,12 @@ export default function SolarERPApp({
                     <tbody className="divide-y divide-gray-100 text-xs">
                       {filteredQuotations.map(q => (
                         <tr key={q.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 border border-gray-200 font-bold text-gray-900">{q.proposalNumber}</td>
+                          <td className="px-6 py-4 border border-gray-200 font-bold text-gray-900">
+                            <div className="flex items-center gap-2">
+                              {q.proposalNumber}
+                              {q.status === 'APPROVED' && <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] rounded-full uppercase">Approved</span>}
+                            </div>
+                          </td>
                           <td className="px-6 py-4 border border-gray-200 font-semibold text-gray-700">{q.client ? q.client.name : 'Unknown Client'}</td>
                           <td className="px-6 py-4 border border-gray-200 text-gray-600">{q.capacity} kW</td>
                           <td className="px-6 py-4 border border-gray-200 text-gray-600">{q.dueDate ? new Date(q.dueDate).toLocaleDateString() : '-'}</td>
@@ -1389,6 +1449,12 @@ export default function SolarERPApp({
                               >
                                 <Download className="h-4 w-4" />
                               </button>
+                              {q.status !== 'APPROVED' && (
+                                <button onClick={() => handleApproveQuotation(q)} className="p-1.5 bg-emerald-50 hover:bg-emerald-100 rounded-lg text-emerald-600 transition-colors border border-emerald-100 shadow-sm flex items-center justify-center" title="Approve Quotation">
+                                  <CheckCircle className="h-4 w-4" />
+                                </button>
+                              )}
+                              <button onClick={() => handleEditQuotation(q)} className="p-1.5 bg-yellow-50 hover:bg-yellow-100 rounded-lg text-yellow-600 transition-colors border border-yellow-100 shadow-sm flex items-center justify-center" title="Edit Quotation"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
                               <button onClick={() => handleDuplicateQuotation(q)} className="p-1.5 bg-gray-50 hover:bg-gray-100 rounded-lg text-gray-600 transition-colors border border-gray-100 shadow-sm flex items-center justify-center" title="Duplicate"><Copy className="h-4 w-4" /></button>
                               <button
                                 onClick={() => {
@@ -1436,9 +1502,12 @@ export default function SolarERPApp({
                   <div>
                     {/* Header */}
                     <div className="flex justify-between items-start border-b-2 border-orange-500 pb-4">
-                      <div>
-                        <h2 className="text-3xl font-black text-[#1E3A8A] uppercase tracking-wider">SANKHLA ENTERPRISES</h2>
-                        <p className="text-[10px] text-gray-500 font-semibold tracking-wide uppercase mt-1">Solar EPC & Renewable Energy Solutions Provider</p>
+                      <div className="flex items-center gap-4">
+                        <img src="/logo.jpg" alt="Sankhla Enterprises" className="h-20 w-20 object-contain drop-shadow-sm" />
+                        <div>
+                          <h2 className="text-3xl font-black text-[#1E3A8A] uppercase tracking-wider">SANKHLA ENTERPRISES</h2>
+                          <p className="text-[10px] text-gray-500 font-semibold tracking-wide uppercase mt-1">Solar EPC & Renewable Energy Solutions Provider</p>
+                        </div>
                       </div>
                       <div className="text-right">
                         <span className="text-xs text-gray-400 block font-bold uppercase">PROPOSAL DATE</span>
@@ -1690,13 +1759,15 @@ export default function SolarERPApp({
                           <span className="font-bold text-[#1E3A8A] block uppercase text-[10px]">Commercial Price Summary</span>
                           <div className="space-y-1.5 text-xs">
                             <div className="flex justify-between text-gray-500">
-                              <span>Material & Installation Cost:</span>
-                              <span className="font-semibold text-gray-800">₹{(previewQuote.materialCost + previewQuote.labourCost + previewQuote.installationCharges).toLocaleString('en-IN')}</span>
+                              <span>Base Project Cost:</span>
+                              <span className="font-semibold text-gray-800">₹{(previewQuote.grandTotal - previewQuote.gstAmount - (previewQuote.items?.reduce((s, i) => s + i.amount, 0) || 0)).toLocaleString('en-IN', { maximumFractionDigits: 2 })}</span>
                             </div>
-                            <div className="flex justify-between text-gray-500">
-                              <span>Logistics & Engineering:</span>
-                              <span className="font-semibold text-gray-800">₹{(previewQuote.transportationCharges + previewQuote.otherCharges - previewQuote.discount).toLocaleString('en-IN')}</span>
-                            </div>
+                            {previewQuote.items && previewQuote.items.length > 0 && previewQuote.items.map((item, idx) => (
+                              <div key={idx} className="flex justify-between text-gray-500">
+                                <span>{item.description}:</span>
+                                <span className="font-semibold text-gray-800">+ ₹{item.amount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</span>
+                              </div>
+                            ))}
                             <div className="flex justify-between text-gray-500">
                               <span>GST Amount ({previewQuote.gstRate}%):</span>
                               <span className="font-semibold text-gray-800">₹{previewQuote.gstAmount.toLocaleString('en-IN')}</span>
@@ -2015,7 +2086,10 @@ export default function SolarERPApp({
       {isQuoteModalOpen && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-start justify-center z-50 p-4 sm:p-6 overflow-y-auto">
           <form onSubmit={handleCreateQuotation} className="bg-white rounded-2xl w-full max-w-2xl p-6 space-y-4 premium-shadow text-xs my-8">
-            <h3 className="text-sm font-bold text-gray-900">Create Quotations</h3>
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="text-sm font-bold text-gray-900">{editingQuoteId ? 'Edit Quotation' : 'Create Quotation'}</h3>
+              <button type="button" onClick={() => {setIsQuoteModalOpen(false); setEditingQuoteId(null);}} className="text-gray-400 hover:text-gray-600 transition-colors bg-gray-100 hover:bg-gray-200 p-1 rounded-full"><X className="h-4 w-4" /></button>
+            </div>
 
             {/* Toggle between Select and Manual client */}
             <div className="bg-gray-50 p-3 rounded-xl border border-gray-200/50 flex items-center justify-between mb-2">
@@ -2132,29 +2206,78 @@ export default function SolarERPApp({
               </div>
             </div>
 
-            <span className="font-bold text-gray-700 block border-b border-gray-100 pb-1">Dynamic Cost Adjustments (INR)</span>
+            <div className="flex items-center justify-between border-b border-gray-100 pb-1 mt-4">
+              <span className="font-bold text-gray-700">Additional Custom Items</span>
+              <button type="button" onClick={() => setQuoteForm({...quoteForm, items: [...(quoteForm.items || []), {description: '', amount: ''}]})} className="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1">
+                <Plus className="h-3 w-3" /> Add More
+              </button>
+            </div>
+            {quoteForm.items && quoteForm.items.length > 0 && (
+              <div className="space-y-3 mt-2">
+                {quoteForm.items.map((item, idx) => (
+                  <div key={idx} className="flex gap-2 items-end">
+                    <div className="flex-1 space-y-1">
+                      <label className="text-[10px] font-semibold text-gray-500 uppercase">Item Title</label>
+                      <input type="text" value={item.description} onChange={(e) => {
+                        const newItems = [...quoteForm.items];
+                        newItems[idx].description = e.target.value;
+                        setQuoteForm({...quoteForm, items: newItems});
+                      }} className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs" placeholder="E.g. Extra Wire" required />
+                    </div>
+                    <div className="w-1/3 space-y-1">
+                      <label className="text-[10px] font-semibold text-gray-500 uppercase">Amount (₹)</label>
+                      <input type="number" value={item.amount} onChange={(e) => {
+                        const newItems = [...quoteForm.items];
+                        newItems[idx].amount = e.target.value;
+                        setQuoteForm({...quoteForm, items: newItems});
+                      }} className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs" required />
+                    </div>
+                    <button type="button" onClick={() => {
+                        const newItems = quoteForm.items.filter((_, i) => i !== idx);
+                        setQuoteForm({...quoteForm, items: newItems});
+                      }} className="p-2.5 mb-0 text-red-500 hover:bg-red-50 rounded-xl border border-transparent hover:border-red-100 transition">
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <span className="font-bold text-gray-700 block border-b border-gray-100 pb-1 mt-4">Dynamic Cost Adjustments (INR)</span>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="font-semibold text-gray-600">Project Cost (Excl. GST)</label>
-                <input type="number" value={quoteForm.projectCost} onChange={(e) => setQuoteForm({ ...quoteForm, projectCost: e.target.value })} className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs font-semibold" />
+                <label className="font-semibold text-gray-600">Final Price (Incl. GST) *</label>
+                <input type="number" required value={quoteForm.finalPrice} onChange={(e) => {
+                  const final = parseFloat(e.target.value) || 0;
+                  const gst = parseFloat(quoteForm.gstRate) || 0;
+                  const base = final / (1 + (gst / 100));
+                  setQuoteForm({ ...quoteForm, finalPrice: e.target.value, projectCost: base });
+                }} className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs font-bold text-blue-900" />
               </div>
               <div className="space-y-1">
-                <label className="font-semibold text-gray-600">GST Percentage (%)</label>
-                <input type="number" value={quoteForm.gstRate} onChange={(e) => setQuoteForm({ ...quoteForm, gstRate: e.target.value })} className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs font-semibold" />
+                <label className="font-semibold text-gray-600">GST Percentage (%) *</label>
+                <input type="number" required value={quoteForm.gstRate} onChange={(e) => {
+                  const gst = parseFloat(e.target.value) || 0;
+                  const final = parseFloat(quoteForm.finalPrice) || 0;
+                  const base = final / (1 + (gst / 100));
+                  setQuoteForm({ ...quoteForm, gstRate: e.target.value, projectCost: base });
+                }} className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs font-bold" />
               </div>
             </div>
 
-            <div className="mt-3 bg-blue-50/60 p-3 rounded-xl border border-blue-100/50 flex justify-between items-center">
-              <span className="font-bold text-gray-700">Estimated Grand Total:</span>
-              <span className="text-lg font-black text-[#1E3A8A]">
-                ₹{((parseFloat(quoteForm.projectCost || 0)) + (parseFloat(quoteForm.projectCost || 0) * parseFloat(quoteForm.gstRate || 0) / 100)).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+            <div className="mt-3 bg-emerald-50/60 p-3 rounded-xl border border-emerald-100 flex justify-between items-center">
+              <span className="font-bold text-emerald-800">Calculated Base Price (Excl. GST):</span>
+              <span className="text-lg font-black text-emerald-700">
+                ₹{(quoteForm.projectCost || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}
               </span>
             </div>
 
             <div className="flex justify-end gap-2 pt-2">
-              <button type="button" onClick={() => setIsQuoteModalOpen(false)} className="px-4 py-2 border border-gray-200 rounded-xl">Cancel</button>
-              <button type="submit" className="px-4 py-2 bg-[#1E3A8A] text-white rounded-xl">Generate Proposal</button>
+              <button type="button" onClick={() => {setIsQuoteModalOpen(false); setEditingQuoteId(null);}} className="px-4 py-2 border border-gray-200 rounded-xl">Cancel</button>
+              <button type="submit" className="px-4 py-2 bg-[#1E3A8A] text-white rounded-xl flex items-center gap-2">
+                {editingQuoteId ? 'Save Changes' : 'Generate Proposal'}
+              </button>
             </div>
           </form>
         </div>
