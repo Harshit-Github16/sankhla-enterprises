@@ -37,11 +37,13 @@ export default async function DashboardPage() {
     quotations,
     payments,
     overdueRecords,
+    inventoryItems
   ] = await Promise.all([
     companyId ? dbServices.getClients(companyId).catch(() => []) : Promise.resolve([]),
     companyId ? dbServices.getQuotations(companyId).catch(() => []) : Promise.resolve([]),
     companyId ? dbServices.getPayments(companyId).catch(() => []) : Promise.resolve([]),
     companyId ? dbServices.getOverdueRecords(companyId).catch(() => []) : Promise.resolve([]),
+    companyId ? dbServices.getInventoryItems(companyId).catch(() => []) : Promise.resolve([])
   ]);
 
   return (
@@ -51,6 +53,7 @@ export default async function DashboardPage() {
       initialQuotations={quotations}
       initialPayments={payments}
       initialOverdueRecords={overdueRecords}
+      initialInventory={inventoryItems}
     />
   );
 }

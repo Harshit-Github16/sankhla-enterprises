@@ -30,6 +30,7 @@ model Company {
   clients            Client[]
   quotations         Quotation[]
   payments           Payment[]
+  inventoryItems     InventoryItem[]
 }
 
 model User {
@@ -144,6 +145,20 @@ model OverdueRecord {
   grandTotal     Float
   clientPayments Float     @default(0)
   unpaidBalance  Float
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model InventoryItem {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  companyId      String    @db.ObjectId
+  company        Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  category       String
+  brand          String
+  modelName      String?
+  specifications String?
+  unitPrice      Float
+  stockQuantity  Int       @default(0)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 }

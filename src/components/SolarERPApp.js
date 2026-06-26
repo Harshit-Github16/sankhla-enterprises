@@ -8,6 +8,7 @@ import {
   LayoutDashboard, TrendingUp, PieChart
 } from 'lucide-react';
 import { useStore } from '@/lib/store';
+import { useRouter } from 'next/navigation';
 
 const CustomSelect = ({ value, onChange, options, placeholder, required }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -60,12 +61,12 @@ const CustomSelect = ({ value, onChange, options, placeholder, required }) => {
         </div>
       )}
       {required && (
-        <input 
-          type="text" 
-          value={value} 
-          onChange={() => {}} 
-          required 
-          className="absolute opacity-0 w-0 h-0 pointer-events-none" 
+        <input
+          type="text"
+          value={value}
+          onChange={() => { }}
+          required
+          className="absolute opacity-0 w-0 h-0 pointer-events-none"
           style={{ top: '50%', left: '50%' }}
         />
       )}
@@ -77,8 +78,10 @@ export default function SolarERPApp({
   initialClients,
   initialQuotations,
   initialPayments,
-  initialOverdueRecords
+  initialOverdueRecords,
+  initialInventory
 }) {
+  const router = useRouter();
   const {
     currentCompany, setCurrentCompany,
     currentUser, setCurrentUser,
@@ -98,12 +101,12 @@ export default function SolarERPApp({
   React.useEffect(() => {
     const saved = localStorage.getItem('sankhla_erp_logged_in') === 'true';
     setIsLoggedIn(saved);
-    
+
     const savedTab = localStorage.getItem('sankhla_erp_active_tab');
     if (savedTab) {
       setActiveTab(savedTab);
     }
-    
+
     setIsHydrated(true);
     if (initialCompanies && initialCompanies.length > 0) {
       setCurrentCompany(initialCompanies[0]);
@@ -179,12 +182,15 @@ export default function SolarERPApp({
   const [isOverdueModalOpen, setIsOverdueModalOpen] = useState(false);
   const [editingOverdueRecord, setEditingOverdueRecord] = useState(null);
   const [overdueForm, setOverdueForm] = useState({
-    proposalNumber: '',
-    clientName: '',
-    dueDate: '',
-    grandTotal: '',
-    clientPayments: '',
-    unpaidBalance: ''
+    proposalNumber: '', clientName: '', dueDate: '', grandTotal: '', clientPayments: '', unpaidBalance: ''
+  });
+
+  // Inventory state variables
+  const [inventory, setInventory] = useState(initialInventory || []);
+  const [isInventoryModalOpen, setIsInventoryModalOpen] = useState(false);
+  const [editingInventoryId, setEditingInventoryId] = useState(null);
+  const [inventoryForm, setInventoryForm] = useState({
+    category: 'Panel', brand: '', modelName: '', specifications: '', unitPrice: '', stockQuantity: ''
   });
 
   // Filter lists based on search
@@ -385,7 +391,7 @@ export default function SolarERPApp({
       });
       const quoteData = await response.json();
       if (quoteData.error) throw new Error(quoteData.error);
-      
+
       if (editingQuoteId) {
         setQuotations(quotations.map(q => q.id === quoteData.id ? quoteData : q));
         addToast("Quotation updated successfully");
@@ -654,6 +660,52 @@ export default function SolarERPApp({
     }
   };
 
+  // --- INVENTORY HANDLERS ---
+  const handleCreateInventoryItem = async (e) => {
+    e.preventDefault();
+    try {
+      if (editingInventoryId) {
+        const response = await fetch('/api/inventory', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: editingInventoryId, itemData: inventoryForm })
+        });
+        if (!response.ok) throw new Error("Failed to update inventory");
+        const data = await response.json();
+        setInventory(prev => prev.map(item => item.id === editingInventoryId ? data : item));
+        addToast("Inventory item updated");
+      } else {
+        const response = await fetch('/api/inventory', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ companyId: currentCompany.id, itemData: inventoryForm })
+        });
+        if (!response.ok) throw new Error("Failed to create inventory");
+        const data = await response.json();
+        setInventory(prev => [data, ...prev]);
+        addToast("Inventory item added");
+      }
+      setIsInventoryModalOpen(false);
+      setEditingInventoryId(null);
+    } catch (err) {
+      console.error(err);
+      addToast(err.message, "error");
+    }
+  };
+
+  const handleDeleteInventoryItem = async (id) => {
+    if (!confirm("Are you sure you want to delete this inventory item?")) return;
+    try {
+      const response = await fetch(`/api/inventory?id=${id}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error("Failed to delete inventory");
+      setInventory(prev => prev.filter(item => item.id !== id));
+      addToast("Inventory item removed");
+    } catch (err) {
+      console.error(err);
+      addToast(err.message, "error");
+    }
+  };
+
   // Delete payment record
   const handleDeletePayment = async (id) => {
     try {
@@ -844,6 +896,7 @@ export default function SolarERPApp({
             {[
               { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
               { id: 'clients', label: 'Client CRM', icon: Users },
+              { id: 'inventory', label: 'Inventory', icon: FileText },
               { id: 'quotations', label: 'Quotations', icon: FileText },
               { id: 'payments', label: 'Payments & Collections', icon: IndianRupee },
               { id: 'overdue', label: 'Overdue Payments', icon: AlertTriangle }
@@ -914,6 +967,7 @@ export default function SolarERPApp({
               <h1 className="text-sm font-black text-gray-900 leading-none mt-1">
                 {activeTab === 'dashboard' && 'Dashboard Overview'}
                 {activeTab === 'clients' && 'Client Relationship CRM'}
+                {activeTab === 'inventory' && 'Inventory Management'}
                 {activeTab === 'quotations' && 'Quotations & Proposal Wizard'}
                 {activeTab === 'payments' && 'Payments & Ledger Logs'}
                 {activeTab === 'overdue' && 'Overdue Account Tracking'}
@@ -932,6 +986,12 @@ export default function SolarERPApp({
                   <span>Add Client</span>
                 </button>
               )}
+              {activeTab === 'inventory' && (
+                <button onClick={() => setIsInventoryModalOpen(true)} className="btn-premium flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-[#1E3A8A] rounded-xl hover:bg-blue-900 shadow-sm transition">
+                  <Plus className="h-3.5 w-3.5" />
+                  <span>Add Stock</span>
+                </button>
+              )}
               {activeTab === 'quotations' && (
                 <button onClick={() => setIsQuoteModalOpen(true)} className="btn-premium flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-[#1E3A8A] rounded-xl hover:bg-blue-900 shadow-sm transition">
                   <Plus className="h-3.5 w-3.5" />
@@ -945,7 +1005,7 @@ export default function SolarERPApp({
                 </button>
               )}
               {activeTab === 'overdue' && (
-                <button 
+                <button
                   onClick={() => {
                     setEditingOverdueRecord(null);
                     setOverdueForm({
@@ -1385,6 +1445,64 @@ export default function SolarERPApp({
                               >
                                 <Trash2 className="h-4 w-4" />
                               </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* INVENTORY MODULE */}
+          {activeTab === 'inventory' && (
+            <div className="space-y-6">
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">Inventory</h1>
+                <p className="text-xs text-gray-500">Manage your solar stock, components, pricing and availability.</p>
+              </div>
+
+              {inventory.length === 0 ? (
+                <div className="bg-white border border-dashed border-gray-200 p-12 text-center rounded-2xl">
+                  <FileText className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+                  <span className="text-xs font-bold text-gray-800 block">No Inventory Items</span>
+                  <p className="text-[11px] text-gray-400 mt-1 max-w-xs mx-auto">Add panels, inverters, and other stock items to start managing inventory.</p>
+                </div>
+              ) : (
+                <div className="premium-card bg-white overflow-x-auto">
+                  <table className="w-full text-left border-collapse border border-gray-200 whitespace-nowrap">
+                    <thead>
+                      <tr className="bg-gray-50 border-b border-gray-100 text-xs font-bold text-gray-500 uppercase">
+                        <th className="px-6 py-4 border border-gray-200">Category</th>
+                        <th className="px-6 py-4 border border-gray-200">Brand / Model</th>
+                        <th className="px-6 py-4 border border-gray-200">Specifications</th>
+                        <th className="px-6 py-4 border border-gray-200">Unit Price</th>
+                        <th className="px-6 py-4 border border-gray-200">Stock Qty</th>
+                        <th className="px-6 py-4 border border-gray-200 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100 text-xs">
+                      {inventory.map(item => (
+                        <tr key={item.id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 border border-gray-200 font-bold text-gray-900">{item.category}</td>
+                          <td className="px-6 py-4 border border-gray-200 text-gray-800 font-semibold">{item.brand} <span className="text-gray-500 font-normal">{item.modelName}</span></td>
+                          <td className="px-6 py-4 border border-gray-200 text-gray-600">{item.specifications || '-'}</td>
+                          <td className="px-6 py-4 border border-gray-200 font-bold text-[#1E3A8A]">₹{item.unitPrice.toLocaleString('en-IN')}</td>
+                          <td className="px-6 py-4 border border-gray-200 text-gray-600">
+                            <span className={`px-2 py-1 rounded-full text-[10px] font-bold ${item.stockQuantity > 10 ? 'bg-green-100 text-green-800' : item.stockQuantity > 0 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>
+                              {item.stockQuantity} in stock
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 border border-gray-200 text-right">
+                            <div className="flex justify-end items-center gap-3">
+                              <button onClick={() => {
+                                setEditingInventoryId(item.id);
+                                setInventoryForm(item);
+                                setIsInventoryModalOpen(true);
+                              }} className="p-1.5 bg-yellow-50 hover:bg-yellow-100 rounded-lg text-yellow-600 transition-colors border border-yellow-100 shadow-sm" title="Edit Item"><Edit className="h-4 w-4" /></button>
+                              <button onClick={() => handleDeleteInventoryItem(item.id)} className="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors border border-red-100 shadow-sm" title="Delete Item"><Trash2 className="h-4 w-4" /></button>
                             </div>
                           </td>
                         </tr>
@@ -1988,6 +2106,67 @@ export default function SolarERPApp({
       </main>
 
       {/* CLIENT DIALOG MODAL */}
+      {/* INVENTORY MODAL */}
+      {isInventoryModalOpen && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <form onSubmit={handleCreateInventoryItem} className="bg-white rounded-2xl w-full max-w-md shadow-2xl flex flex-col max-h-[90vh]">
+            <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">{editingInventoryId ? 'Edit Stock Item' : 'Add Stock Item'}</h2>
+                <p className="text-xs text-gray-500 mt-1">Manage components and pricing</p>
+              </div>
+              <button type="button" onClick={() => setIsInventoryModalOpen(false)} className="text-gray-400 hover:bg-gray-100 p-2 rounded-xl transition-colors"><X className="h-5 w-5" /></button>
+            </div>
+
+            <div className="p-6 overflow-y-auto flex-1 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1">Category</label>
+                <select required value={inventoryForm.category} onChange={e => setInventoryForm({ ...inventoryForm, category: e.target.value })} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-[#1E3A8A] transition-all">
+                  <option value="Panel">Solar Panel</option>
+                  <option value="Inverter">Inverter</option>
+                  <option value="Structure">Structure</option>
+                  <option value="Cable">Cable / Wire</option>
+                  <option value="BOS">BOS / Accessories</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Brand</label>
+                  <input required type="text" placeholder="e.g. Waaree" value={inventoryForm.brand} onChange={e => setInventoryForm({ ...inventoryForm, brand: e.target.value })} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#1E3A8A]" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Model Name</label>
+                  <input type="text" placeholder="e.g. MAX 50KTL3" value={inventoryForm.modelName} onChange={e => setInventoryForm({ ...inventoryForm, modelName: e.target.value })} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#1E3A8A]" />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1">Specifications</label>
+                <input type="text" placeholder="e.g. 540Wp Mono PERC" value={inventoryForm.specifications} onChange={e => setInventoryForm({ ...inventoryForm, specifications: e.target.value })} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#1E3A8A]" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Unit Price (₹)</label>
+                  <input required type="number" step="0.01" min="0" placeholder="0.00" value={inventoryForm.unitPrice} onChange={e => setInventoryForm({ ...inventoryForm, unitPrice: e.target.value })} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#1E3A8A]" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Stock Quantity</label>
+                  <input required type="number" min="0" placeholder="0" value={inventoryForm.stockQuantity} onChange={e => setInventoryForm({ ...inventoryForm, stockQuantity: e.target.value })} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#1E3A8A]" />
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-gray-100 bg-gray-50/50 flex gap-3 justify-end rounded-b-2xl">
+              <button type="button" onClick={() => setIsInventoryModalOpen(false)} className="px-5 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-200 bg-gray-100 rounded-xl transition-colors">Cancel</button>
+              <button type="submit" className="px-5 py-2.5 text-sm font-semibold text-white bg-[#1E3A8A] hover:bg-blue-900 rounded-xl transition-colors shadow-sm">{editingInventoryId ? 'Update Stock' : 'Add to Inventory'}</button>
+            </div>
+          </form>
+        </div>
+      )}
+
       {isClientModalOpen && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-start justify-center z-50 p-4 sm:p-6 overflow-y-auto">
           <form onSubmit={handleCreateClient} className="bg-white rounded-2xl w-full max-w-md p-6 space-y-4 premium-shadow text-xs my-8">
@@ -2088,7 +2267,7 @@ export default function SolarERPApp({
           <form onSubmit={handleCreateQuotation} className="bg-white rounded-2xl w-full max-w-2xl p-6 space-y-4 premium-shadow text-xs my-8">
             <div className="flex justify-between items-center mb-2">
               <h3 className="text-sm font-bold text-gray-900">{editingQuoteId ? 'Edit Quotation' : 'Create Quotation'}</h3>
-              <button type="button" onClick={() => {setIsQuoteModalOpen(false); setEditingQuoteId(null);}} className="text-gray-400 hover:text-gray-600 transition-colors bg-gray-100 hover:bg-gray-200 p-1 rounded-full"><X className="h-4 w-4" /></button>
+              <button type="button" onClick={() => { setIsQuoteModalOpen(false); setEditingQuoteId(null); }} className="text-gray-400 hover:text-gray-600 transition-colors bg-gray-100 hover:bg-gray-200 p-1 rounded-full"><X className="h-4 w-4" /></button>
             </div>
 
             {/* Toggle between Select and Manual client */}
@@ -2208,7 +2387,7 @@ export default function SolarERPApp({
 
             <div className="flex items-center justify-between border-b border-gray-100 pb-1 mt-4">
               <span className="font-bold text-gray-700">Additional Custom Items</span>
-              <button type="button" onClick={() => setQuoteForm({...quoteForm, items: [...(quoteForm.items || []), {description: '', amount: ''}]})} className="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1">
+              <button type="button" onClick={() => setQuoteForm({ ...quoteForm, items: [...(quoteForm.items || []), { description: '', amount: '' }] })} className="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1">
                 <Plus className="h-3 w-3" /> Add More
               </button>
             </div>
@@ -2221,7 +2400,7 @@ export default function SolarERPApp({
                       <input type="text" value={item.description} onChange={(e) => {
                         const newItems = [...quoteForm.items];
                         newItems[idx].description = e.target.value;
-                        setQuoteForm({...quoteForm, items: newItems});
+                        setQuoteForm({ ...quoteForm, items: newItems });
                       }} className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs" placeholder="E.g. Extra Wire" required />
                     </div>
                     <div className="w-1/3 space-y-1">
@@ -2229,13 +2408,13 @@ export default function SolarERPApp({
                       <input type="number" value={item.amount} onChange={(e) => {
                         const newItems = [...quoteForm.items];
                         newItems[idx].amount = e.target.value;
-                        setQuoteForm({...quoteForm, items: newItems});
+                        setQuoteForm({ ...quoteForm, items: newItems });
                       }} className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs" required />
                     </div>
                     <button type="button" onClick={() => {
-                        const newItems = quoteForm.items.filter((_, i) => i !== idx);
-                        setQuoteForm({...quoteForm, items: newItems});
-                      }} className="p-2.5 mb-0 text-red-500 hover:bg-red-50 rounded-xl border border-transparent hover:border-red-100 transition">
+                      const newItems = quoteForm.items.filter((_, i) => i !== idx);
+                      setQuoteForm({ ...quoteForm, items: newItems });
+                    }} className="p-2.5 mb-0 text-red-500 hover:bg-red-50 rounded-xl border border-transparent hover:border-red-100 transition">
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
@@ -2274,7 +2453,7 @@ export default function SolarERPApp({
             </div>
 
             <div className="flex justify-end gap-2 pt-2">
-              <button type="button" onClick={() => {setIsQuoteModalOpen(false); setEditingQuoteId(null);}} className="px-4 py-2 border border-gray-200 rounded-xl">Cancel</button>
+              <button type="button" onClick={() => { setIsQuoteModalOpen(false); setEditingQuoteId(null); }} className="px-4 py-2 border border-gray-200 rounded-xl">Cancel</button>
               <button type="submit" className="px-4 py-2 bg-[#1E3A8A] text-white rounded-xl flex items-center gap-2">
                 {editingQuoteId ? 'Save Changes' : 'Generate Proposal'}
               </button>

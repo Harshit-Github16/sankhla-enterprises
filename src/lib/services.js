@@ -272,3 +272,41 @@ export async function deleteOverdueRecord(id) {
     where: { id }
   });
 }
+
+// ==========================================
+// INVENTORY
+// ==========================================
+export async function getInventoryItems(companyId) {
+  return await prisma.inventoryItem.findMany({
+    where: { companyId },
+    orderBy: { category: 'asc' }
+  });
+}
+
+export async function createInventoryItem(companyId, itemData) {
+  return await prisma.inventoryItem.create({
+    data: {
+      ...itemData,
+      companyId,
+      unitPrice: parseFloat(itemData.unitPrice || 0),
+      stockQuantity: parseInt(itemData.stockQuantity || 0)
+    }
+  });
+}
+
+export async function updateInventoryItem(id, itemData) {
+  return await prisma.inventoryItem.update({
+    where: { id },
+    data: {
+      ...itemData,
+      unitPrice: parseFloat(itemData.unitPrice || 0),
+      stockQuantity: parseInt(itemData.stockQuantity || 0)
+    }
+  });
+}
+
+export async function deleteInventoryItem(id) {
+  return await prisma.inventoryItem.delete({
+    where: { id }
+  });
+}
