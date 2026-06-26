@@ -8,8 +8,13 @@ const outfit = Outfit({
 
 export const metadata = {
   title: "Sankhla Solar ERP - Next-Gen Solar EPC Operations",
-  description: "A premium, unified ERP & CRM platform for Solar EPC organizations to streamline design, inventory, accounting, and installations.",
-  viewport: "width=device-width, initial-scale=1",
+  description: "A premium, unified ERP & CRM platform for Solar EPC organizations.",
+  manifest: "/manifest.json",
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }) {
@@ -19,6 +24,21 @@ export default function RootLayout({ children }) {
         className={`${outfit.variable} antialiased bg-[#FAFBFC] text-[#111827]`}
       >
         {children}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                    console.log('ServiceWorker registration successful');
+                  }, function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                  });
+                });
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   );
