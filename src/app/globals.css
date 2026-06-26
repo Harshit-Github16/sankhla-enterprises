@@ -27,7 +27,7 @@
     --text-primary: #111827;
     --text-secondary: #6B7280;
     
-    --radius: 16px;
+    --radius: 6px;
   }
 }
 
@@ -42,7 +42,7 @@
   --color-brand-border: #E5E7EB;
   --color-text-main: #111827;
   --color-text-sub: #6B7280;
-  --border-radius-premium: 16px;
+  --border-radius-premium: 6px;
 }
 
 body {
@@ -82,7 +82,7 @@ body {
 .premium-card {
   background: #FFFFFF;
   border: 1px solid #E5E7EB;
-  border-radius: 16px;
+  border-radius: 6px;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 

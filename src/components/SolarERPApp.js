@@ -31,7 +31,7 @@ const CustomSelect = ({ value, onChange, options, placeholder, required }) => {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs text-left flex justify-between items-center transition-all focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent"
+        className="w-full p-2 border border-gray-200 rounded-md bg-gray-50 text-xs text-left flex justify-between items-center transition-all focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent"
       >
         <span className={!selectedOption ? "text-gray-500" : "text-gray-900 font-semibold truncate pr-2"}>
           {selectedOption ? selectedOption.label : placeholder}
@@ -40,7 +40,7 @@ const CustomSelect = ({ value, onChange, options, placeholder, required }) => {
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1.5 bg-white border border-gray-100 rounded-xl shadow-xl max-h-60 overflow-y-auto premium-shadow">
+        <div className="absolute z-50 w-full mt-1.5 bg-white border border-gray-100 rounded-md shadow-xl max-h-60 overflow-y-auto premium-shadow">
           <ul className="py-1">
             <li
               className="px-3 py-2 text-xs text-gray-500 hover:bg-gray-50 cursor-pointer border-b border-gray-50"
@@ -81,7 +81,6 @@ export default function SolarERPApp({
   initialOverdueRecords,
   initialInventory
 }) {
-  const router = useRouter();
   const {
     currentCompany, setCurrentCompany,
     currentUser, setCurrentUser,
@@ -788,7 +787,7 @@ export default function SolarERPApp({
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-sky-100/40 rounded-full blur-[120px]"></div>
         </div>
 
-        <div className="w-full max-w-md bg-white/80 backdrop-blur-xl border border-white/50 rounded-xl p-8 space-y-6 shadow-[0_8px_30px_rgb(0,0,0,0.08)] relative z-10 text-gray-700">
+        <div className="w-full max-w-md bg-white/80 backdrop-blur-xl border border-white/50 rounded-md p-8 space-y-6 shadow-[0_8px_30px_rgb(0,0,0,0.08)] relative z-10 text-gray-700">
           <div className="text-center space-y-2">
             <div className="flex justify-center mx-auto mb-4">
               <img src="/logo.jpg" alt="Sankhla Enterprises Logo" className="h-28 object-contain drop-shadow-md" />
@@ -805,7 +804,7 @@ export default function SolarERPApp({
                 value={loginUsername}
                 onChange={(e) => setLoginUsername(e.target.value)}
                 placeholder="Enter username"
-                className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-900 transition text-xs"
+                className="w-full p-3 border border-gray-200 rounded-md bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-900 transition text-xs"
               />
             </div>
 
@@ -817,13 +816,13 @@ export default function SolarERPApp({
                 value={loginPassword}
                 onChange={(e) => setLoginPassword(e.target.value)}
                 placeholder="••••••"
-                className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-900 transition text-xs"
+                className="w-full p-3 border border-gray-200 rounded-md bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-900 transition text-xs"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full py-3 bg-[#1E3A8A] hover:bg-blue-900 text-white font-bold rounded-xl transition duration-200 mt-2 shadow-sm text-xs"
+              className="w-full py-3 bg-[#1E3A8A] hover:bg-blue-900 text-white font-bold rounded-md transition duration-200 mt-2 shadow-sm text-xs"
             >
               Sign In to System
             </button>
@@ -837,7 +836,7 @@ export default function SolarERPApp({
         {/* Floating Toast Notification Box on Login Screen */}
         <div className="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none">
           {toasts.map(toast => (
-            <div key={toast.id} className="p-4 rounded-xl shadow-lg border text-sm flex items-center gap-3 bg-white pointer-events-auto border-emerald-200 text-emerald-800">
+            <div key={toast.id} className="p-4 rounded-md shadow-lg border text-sm flex items-center gap-3 bg-white pointer-events-auto border-emerald-200 text-emerald-800">
               <CheckCircle className="h-4 w-4 text-emerald-600" />
               <span>{toast.message}</span>
               <button type="button" onClick={() => removeToast(toast.id)} className="ml-auto text-gray-400 hover:text-gray-600">&times;</button>
@@ -854,7 +853,7 @@ export default function SolarERPApp({
       {/* Toast notifications */}
       <div className="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none">
         {toasts.map(toast => (
-          <div key={toast.id} className="p-4 rounded-xl shadow-lg border text-sm flex items-center gap-3 bg-white pointer-events-auto border-emerald-200 text-emerald-800">
+          <div key={toast.id} className="p-4 rounded-md shadow-lg border text-sm flex items-center gap-3 bg-white pointer-events-auto border-emerald-200 text-emerald-800">
             <CheckCircle className="h-4 w-4 text-emerald-600" />
             <span>{toast.message}</span>
             <button onClick={() => removeToast(toast.id)} className="ml-auto text-gray-400 hover:text-gray-600">&times;</button>
@@ -886,7 +885,7 @@ export default function SolarERPApp({
               </div>
             </div>
             {/* Close sidebar button on mobile */}
-            <button onClick={() => setIsSidebarOpen(false)} className="p-1 rounded-lg hover:bg-gray-100 md:hidden">
+            <button onClick={() => setIsSidebarOpen(false)} className="p-1 rounded-md hover:bg-gray-100 md:hidden">
               <X className="h-4 w-4 text-gray-500" />
             </button>
           </div>
@@ -910,7 +909,7 @@ export default function SolarERPApp({
                     setPreviewQuote(null);
                     setIsSidebarOpen(false); // Auto-close sidebar on mobile menu selection
                   }}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-all ${activeTab === item.id
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md transition-all ${activeTab === item.id
                     ? 'bg-[#1E3A8A] text-white shadow-sm'
                     : 'text-[#6B7280] hover:text-[#111827] hover:bg-gray-50'
                     }`}
@@ -927,7 +926,7 @@ export default function SolarERPApp({
         <div className="p-4 border-t border-[#E5E7EB] space-y-2">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-red-600 hover:text-red-750 hover:bg-red-50 rounded-xl transition duration-150"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-red-600 hover:text-red-750 hover:bg-red-50 rounded-md transition duration-150"
           >
             Logout / Sign Out
           </button>
@@ -952,7 +951,7 @@ export default function SolarERPApp({
             {/* Hamburger menu for mobile */}
             <button
               onClick={() => setIsSidebarOpen(true)}
-              className="p-2 -ml-2 rounded-xl hover:bg-gray-100 md:hidden"
+              className="p-2 -ml-2 rounded-md hover:bg-gray-100 md:hidden"
             >
               <Menu className="h-5 w-5 text-gray-700" />
             </button>
@@ -981,25 +980,25 @@ export default function SolarERPApp({
             {/* Context-aware buttons */}
             <div className="flex gap-2">
               {activeTab === 'clients' && (
-                <button onClick={() => setIsClientModalOpen(true)} className="btn-premium flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-[#1E3A8A] rounded-xl hover:bg-blue-900 shadow-sm transition">
+                <button onClick={() => setIsClientModalOpen(true)} className="btn-premium flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-[#1E3A8A] rounded-md hover:bg-blue-900 shadow-sm transition">
                   <Plus className="h-3.5 w-3.5" />
                   <span>Add Client</span>
                 </button>
               )}
               {activeTab === 'inventory' && (
-                <button onClick={() => setIsInventoryModalOpen(true)} className="btn-premium flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-[#1E3A8A] rounded-xl hover:bg-blue-900 shadow-sm transition">
+                <button onClick={() => setIsInventoryModalOpen(true)} className="btn-premium flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-[#1E3A8A] rounded-md hover:bg-blue-900 shadow-sm transition">
                   <Plus className="h-3.5 w-3.5" />
                   <span>Add Stock</span>
                 </button>
               )}
               {activeTab === 'quotations' && (
-                <button onClick={() => setIsQuoteModalOpen(true)} className="btn-premium flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-[#1E3A8A] rounded-xl hover:bg-blue-900 shadow-sm transition">
+                <button onClick={() => setIsQuoteModalOpen(true)} className="btn-premium flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-[#1E3A8A] rounded-md hover:bg-blue-900 shadow-sm transition">
                   <Plus className="h-3.5 w-3.5" />
                   <span>Create Quotation</span>
                 </button>
               )}
               {activeTab === 'payments' && (
-                <button onClick={() => setIsPaymentModalOpen(true)} className="btn-premium flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-[#1E3A8A] rounded-xl hover:bg-blue-900 shadow-sm transition">
+                <button onClick={() => setIsPaymentModalOpen(true)} className="btn-premium flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-[#1E3A8A] rounded-md hover:bg-blue-900 shadow-sm transition">
                   <Plus className="h-3.5 w-3.5" />
                   <span>Record Payment</span>
                 </button>
@@ -1018,7 +1017,7 @@ export default function SolarERPApp({
                     });
                     setIsOverdueModalOpen(true);
                   }}
-                  className="btn-premium flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-[#1E3A8A] rounded-xl hover:bg-blue-900 shadow-sm transition"
+                  className="btn-premium flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-[#1E3A8A] rounded-md hover:bg-blue-900 shadow-sm transition"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   <span>Add Overdue</span>
@@ -1046,7 +1045,7 @@ export default function SolarERPApp({
           {activeTab === 'dashboard' && (
             <div className="space-y-6">
               {/* Welcome Header */}
-              <div className="flex justify-between items-center bg-gradient-to-r from-blue-900 to-indigo-900 text-white p-6 rounded-2xl shadow-sm">
+              <div className="flex justify-between items-center bg-gradient-to-r from-blue-900 to-indigo-900 text-white p-6 rounded-md shadow-sm">
                 <div>
                   <h1 className="text-xl font-bold">Welcome back, {currentUser?.name || 'Jayesh Sankhla'}!</h1>
                   <p className="text-xs text-blue-200 mt-1">Here is a quick snapshot of Sankhla Enterprises operational activities today.</p>
@@ -1061,9 +1060,9 @@ export default function SolarERPApp({
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <button
                   onClick={() => setIsClientModalOpen(true)}
-                  className="p-4 bg-white hover:bg-blue-50/50 border border-gray-100 rounded-2xl flex flex-col items-center justify-center text-center transition group shadow-sm"
+                  className="p-4 bg-white hover:bg-blue-50/50 border border-gray-100 rounded-md flex flex-col items-center justify-center text-center transition group shadow-sm"
                 >
-                  <div className="h-10 w-10 rounded-xl bg-blue-50 text-blue-900 flex items-center justify-center mb-2 group-hover:bg-blue-900 group-hover:text-white transition">
+                  <div className="h-10 w-10 rounded-md bg-blue-50 text-blue-900 flex items-center justify-center mb-2 group-hover:bg-blue-900 group-hover:text-white transition">
                     <Users className="h-5 w-5" />
                   </div>
                   <span className="text-xs font-bold text-gray-800">Add CRM Client</span>
@@ -1099,9 +1098,9 @@ export default function SolarERPApp({
                     setIsManualClient(false);
                     setIsQuoteModalOpen(true);
                   }}
-                  className="p-4 bg-white hover:bg-blue-50/50 border border-gray-100 rounded-2xl flex flex-col items-center justify-center text-center transition group shadow-sm"
+                  className="p-4 bg-white hover:bg-blue-50/50 border border-gray-100 rounded-md flex flex-col items-center justify-center text-center transition group shadow-sm"
                 >
-                  <div className="h-10 w-10 rounded-xl bg-amber-50 text-amber-800 flex items-center justify-center mb-2 group-hover:bg-amber-800 group-hover:text-white transition">
+                  <div className="h-10 w-10 rounded-md bg-amber-50 text-amber-800 flex items-center justify-center mb-2 group-hover:bg-amber-800 group-hover:text-white transition">
                     <FileText className="h-5 w-5" />
                   </div>
                   <span className="text-xs font-bold text-gray-800">Create Quotation</span>
@@ -1113,9 +1112,9 @@ export default function SolarERPApp({
                     setPaymentForm({ clientId: '', amount: '', paymentMode: 'BANK_TRANSFER', notes: '' });
                     setIsPaymentModalOpen(true);
                   }}
-                  className="p-4 bg-white hover:bg-blue-50/50 border border-gray-100 rounded-2xl flex flex-col items-center justify-center text-center transition group shadow-sm"
+                  className="p-4 bg-white hover:bg-blue-50/50 border border-gray-100 rounded-md flex flex-col items-center justify-center text-center transition group shadow-sm"
                 >
-                  <div className="h-10 w-10 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center mb-2 group-hover:bg-emerald-800 group-hover:text-white transition">
+                  <div className="h-10 w-10 rounded-md bg-emerald-50 text-emerald-800 flex items-center justify-center mb-2 group-hover:bg-emerald-800 group-hover:text-white transition">
                     <IndianRupee className="h-5 w-5" />
                   </div>
                   <span className="text-xs font-bold text-gray-800">Log Payment</span>
@@ -1135,9 +1134,9 @@ export default function SolarERPApp({
                     });
                     setIsOverdueModalOpen(true);
                   }}
-                  className="p-4 bg-white hover:bg-blue-50/50 border border-gray-100 rounded-2xl flex flex-col items-center justify-center text-center transition group shadow-sm"
+                  className="p-4 bg-white hover:bg-blue-50/50 border border-gray-100 rounded-md flex flex-col items-center justify-center text-center transition group shadow-sm"
                 >
-                  <div className="h-10 w-10 rounded-xl bg-red-50 text-red-600 flex items-center justify-center mb-2 group-hover:bg-red-600 group-hover:text-white transition">
+                  <div className="h-10 w-10 rounded-md bg-red-50 text-red-600 flex items-center justify-center mb-2 group-hover:bg-red-600 group-hover:text-white transition">
                     <AlertTriangle className="h-5 w-5" />
                   </div>
                   <span className="text-xs font-bold text-gray-800">Add Overdue Payment</span>
@@ -1147,8 +1146,8 @@ export default function SolarERPApp({
 
               {/* KPI Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-                  <div className="p-3 bg-blue-50 rounded-xl text-blue-900">
+                <div className="bg-white p-5 rounded-md border border-gray-100 shadow-sm flex items-center gap-4">
+                  <div className="p-3 bg-blue-50 rounded-md text-blue-900">
                     <Users className="h-6 w-6" />
                   </div>
                   <div>
@@ -1157,8 +1156,8 @@ export default function SolarERPApp({
                   </div>
                 </div>
 
-                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-                  <div className="p-3 bg-amber-50 rounded-xl text-amber-800">
+                <div className="bg-white p-5 rounded-md border border-gray-100 shadow-sm flex items-center gap-4">
+                  <div className="p-3 bg-amber-50 rounded-md text-amber-800">
                     <FileText className="h-6 w-6" />
                   </div>
                   <div>
@@ -1169,8 +1168,8 @@ export default function SolarERPApp({
                   </div>
                 </div>
 
-                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-                  <div className="p-3 bg-emerald-50 rounded-xl text-emerald-800">
+                <div className="bg-white p-5 rounded-md border border-gray-100 shadow-sm flex items-center gap-4">
+                  <div className="p-3 bg-emerald-50 rounded-md text-emerald-800">
                     <IndianRupee className="h-6 w-6" />
                   </div>
                   <div>
@@ -1181,8 +1180,8 @@ export default function SolarERPApp({
                   </div>
                 </div>
 
-                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-                  <div className="p-3 bg-red-50 rounded-xl text-red-600">
+                <div className="bg-white p-5 rounded-md border border-gray-100 shadow-sm flex items-center gap-4">
+                  <div className="p-3 bg-red-50 rounded-md text-red-600">
                     <AlertTriangle className="h-6 w-6" />
                   </div>
                   <div>
@@ -1197,7 +1196,7 @@ export default function SolarERPApp({
               {/* Graph Panel */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* SVG Bar Chart Card */}
-                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm lg:col-span-2 space-y-4">
+                <div className="bg-white p-6 rounded-md border border-gray-100 shadow-sm lg:col-span-2 space-y-4">
                   <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
                     <div>
                       <h3 className="font-bold text-sm text-gray-800">Collections vs Sales Performance</h3>
@@ -1274,7 +1273,7 @@ export default function SolarERPApp({
                 </div>
 
                 {/* Project Capacity Breakdown */}
-                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4 flex flex-col justify-between">
+                <div className="bg-white p-6 rounded-md border border-gray-100 shadow-sm space-y-4 flex flex-col justify-between">
                   <div>
                     <h3 className="font-bold text-sm text-gray-800">Project Size Analysis</h3>
                     <p className="text-[10px] text-gray-400 mt-0.5">Capacity breakdown of solar installations drafted.</p>
@@ -1324,7 +1323,7 @@ export default function SolarERPApp({
               {/* Recent Activity lists */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Recent Quotations */}
-                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-3">
+                <div className="bg-white p-5 rounded-md border border-gray-100 shadow-sm space-y-3">
                   <div className="flex justify-between items-center pb-2 border-b border-gray-50">
                     <span className="font-bold text-xs text-gray-800 block">Recent Quotations</span>
                     <button onClick={() => setActiveTab('quotations')} className="text-[10px] font-bold text-blue-900 hover:underline">View All</button>
@@ -1349,7 +1348,7 @@ export default function SolarERPApp({
                 </div>
 
                 {/* Recent Collections */}
-                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-3">
+                <div className="bg-white p-5 rounded-md border border-gray-100 shadow-sm space-y-3">
                   <div className="flex justify-between items-center pb-2 border-b border-gray-50">
                     <span className="font-bold text-xs text-gray-800 block">Recent Payments Received</span>
                     <button onClick={() => setActiveTab('payments')} className="text-[10px] font-bold text-blue-900 hover:underline">View All</button>
@@ -1387,7 +1386,7 @@ export default function SolarERPApp({
                 {clients.length > 0 && (
                   <button
                     onClick={() => handleExportCSV(clients, 'clients_list')}
-                    className="px-3 py-1.5 border border-gray-200 rounded-xl text-xs bg-white text-gray-600 hover:bg-gray-50 flex items-center gap-1 whitespace-nowrap flex-shrink-0"
+                    className="px-3 py-1.5 border border-gray-200 rounded-md text-xs bg-white text-gray-600 hover:bg-gray-50 flex items-center gap-1 whitespace-nowrap flex-shrink-0"
                   >
                     <Download className="h-3 w-3" /> Export CSV
                   </button>
@@ -1395,7 +1394,7 @@ export default function SolarERPApp({
               </div>
 
               {clients.length === 0 ? (
-                <div className="bg-white border border-dashed border-gray-200 p-12 text-center rounded-2xl">
+                <div className="bg-white border border-dashed border-gray-200 p-12 text-center rounded-md">
                   <Users className="h-8 w-8 text-gray-300 mx-auto mb-2" />
                   <span className="text-xs font-bold text-gray-800 block">No Clients Found</span>
                   <p className="text-[11px] text-gray-400 mt-1 max-w-xs mx-auto">Get started by creating your first client account using the button above.</p>
@@ -1430,7 +1429,7 @@ export default function SolarERPApp({
                                   setSelectedClient(c);
                                   setIsClientDetailOpen(true);
                                 }}
-                                className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 text-xs font-semibold transition-colors border border-blue-100 shadow-sm"
+                                className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 text-xs font-semibold transition-colors border border-blue-100 shadow-sm"
                               >
                                 Open Ledger File
                               </button>
@@ -1440,7 +1439,7 @@ export default function SolarERPApp({
                                     handleDeleteClient(c.id);
                                   }
                                 }}
-                                className="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors flex items-center justify-center border border-red-100 shadow-sm"
+                                className="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-md transition-colors flex items-center justify-center border border-red-100 shadow-sm"
                                 title="Delete Client"
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -1465,7 +1464,7 @@ export default function SolarERPApp({
               </div>
 
               {inventory.length === 0 ? (
-                <div className="bg-white border border-dashed border-gray-200 p-12 text-center rounded-2xl">
+                <div className="bg-white border border-dashed border-gray-200 p-12 text-center rounded-md">
                   <FileText className="h-8 w-8 text-gray-300 mx-auto mb-2" />
                   <span className="text-xs font-bold text-gray-800 block">No Inventory Items</span>
                   <p className="text-[11px] text-gray-400 mt-1 max-w-xs mx-auto">Add panels, inverters, and other stock items to start managing inventory.</p>
@@ -1501,8 +1500,8 @@ export default function SolarERPApp({
                                 setEditingInventoryId(item.id);
                                 setInventoryForm(item);
                                 setIsInventoryModalOpen(true);
-                              }} className="p-1.5 bg-yellow-50 hover:bg-yellow-100 rounded-lg text-yellow-600 transition-colors border border-yellow-100 shadow-sm" title="Edit Item"><Edit className="h-4 w-4" /></button>
-                              <button onClick={() => handleDeleteInventoryItem(item.id)} className="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors border border-red-100 shadow-sm" title="Delete Item"><Trash2 className="h-4 w-4" /></button>
+                              }} className="p-1.5 bg-yellow-50 hover:bg-yellow-100 rounded-md text-yellow-600 transition-colors border border-yellow-100 shadow-sm" title="Edit Item"><Edit className="h-4 w-4" /></button>
+                              <button onClick={() => handleDeleteInventoryItem(item.id)} className="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-md transition-colors border border-red-100 shadow-sm" title="Delete Item"><Trash2 className="h-4 w-4" /></button>
                             </div>
                           </td>
                         </tr>
@@ -1523,7 +1522,7 @@ export default function SolarERPApp({
               </div>
 
               {quotations.length === 0 ? (
-                <div className="bg-white border border-dashed border-gray-200 p-12 text-center rounded-2xl">
+                <div className="bg-white border border-dashed border-gray-200 p-12 text-center rounded-md">
                   <FileText className="h-8 w-8 text-gray-300 mx-auto mb-2" />
                   <span className="text-xs font-bold text-gray-800 block">No Quotations Drafted</span>
                   <p className="text-[11px] text-gray-400 mt-1 max-w-xs mx-auto">Create solar system proposals for registered clients using the Draft Proposal button.</p>
@@ -1556,31 +1555,31 @@ export default function SolarERPApp({
                           <td className="px-6 py-4 border border-gray-200 font-bold text-[#1E3A8A]">₹{q.grandTotal.toLocaleString('en-IN')}</td>
                           <td className="px-6 py-4 border border-gray-200 text-right">
                             <div className="flex justify-end items-center gap-3">
-                              <button onClick={() => setPreviewQuote(q)} className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 text-xs font-semibold transition-colors border border-blue-100 shadow-sm">Preview proposal</button>
+                              <button onClick={() => setPreviewQuote(q)} className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 text-xs font-semibold transition-colors border border-blue-100 shadow-sm">Preview proposal</button>
                               <button
                                 onClick={() => {
                                   setPreviewQuote(q);
                                   setTimeout(() => window.print(), 500);
                                 }}
-                                className="p-1.5 bg-green-50 hover:bg-green-100 rounded-lg text-green-600 transition-colors border border-green-100 shadow-sm flex items-center justify-center"
+                                className="p-1.5 bg-green-50 hover:bg-green-100 rounded-md text-green-600 transition-colors border border-green-100 shadow-sm flex items-center justify-center"
                                 title="Download / Print PDF"
                               >
                                 <Download className="h-4 w-4" />
                               </button>
                               {q.status !== 'APPROVED' && (
-                                <button onClick={() => handleApproveQuotation(q)} className="p-1.5 bg-emerald-50 hover:bg-emerald-100 rounded-lg text-emerald-600 transition-colors border border-emerald-100 shadow-sm flex items-center justify-center" title="Approve Quotation">
+                                <button onClick={() => handleApproveQuotation(q)} className="p-1.5 bg-emerald-50 hover:bg-emerald-100 rounded-md text-emerald-600 transition-colors border border-emerald-100 shadow-sm flex items-center justify-center" title="Approve Quotation">
                                   <CheckCircle className="h-4 w-4" />
                                 </button>
                               )}
-                              <button onClick={() => handleEditQuotation(q)} className="p-1.5 bg-yellow-50 hover:bg-yellow-100 rounded-lg text-yellow-600 transition-colors border border-yellow-100 shadow-sm flex items-center justify-center" title="Edit Quotation"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
-                              <button onClick={() => handleDuplicateQuotation(q)} className="p-1.5 bg-gray-50 hover:bg-gray-100 rounded-lg text-gray-600 transition-colors border border-gray-100 shadow-sm flex items-center justify-center" title="Duplicate"><Copy className="h-4 w-4" /></button>
+                              <button onClick={() => handleEditQuotation(q)} className="p-1.5 bg-yellow-50 hover:bg-yellow-100 rounded-md text-yellow-600 transition-colors border border-yellow-100 shadow-sm flex items-center justify-center" title="Edit Quotation"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+                              <button onClick={() => handleDuplicateQuotation(q)} className="p-1.5 bg-gray-50 hover:bg-gray-100 rounded-md text-gray-600 transition-colors border border-gray-100 shadow-sm flex items-center justify-center" title="Duplicate"><Copy className="h-4 w-4" /></button>
                               <button
                                 onClick={() => {
                                   if (confirm("Are you sure you want to delete this quotation?")) {
                                     handleDeleteQuotation(q.id);
                                   }
                                 }}
-                                className="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors border border-red-100 shadow-sm flex items-center justify-center"
+                                className="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-md transition-colors border border-red-100 shadow-sm flex items-center justify-center"
                                 title="Delete Quotation"
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -1605,7 +1604,7 @@ export default function SolarERPApp({
                 </button>
                 <button
                   onClick={() => window.print()}
-                  className="px-4 py-2 text-xs font-semibold text-white bg-[#1E3A8A] rounded-xl hover:bg-blue-900 flex items-center gap-1.5"
+                  className="px-4 py-2 text-xs font-semibold text-white bg-[#1E3A8A] rounded-md hover:bg-blue-900 flex items-center gap-1.5"
                 >
                   <Download className="h-3.5 w-3.5" />
                   <span>Download PDF / Print Proposal</span>
@@ -1613,7 +1612,7 @@ export default function SolarERPApp({
               </div>
 
               {/* Printable Template */}
-              <div id="quotation-print-area" className="bg-white rounded-2xl border border-gray-200 max-w-4xl mx-auto premium-shadow font-sans text-xs text-gray-800">
+              <div id="quotation-print-area" className="bg-white rounded-md border border-gray-200 max-w-4xl mx-auto premium-shadow font-sans text-xs text-gray-800">
 
                 {/* PAGE 1: INTRODUCTION & BRANDING */}
                 <div className="p-12 print:p-8 min-h-[297mm] flex flex-col justify-between" style={{ pageBreakAfter: 'always' }}>
@@ -1635,7 +1634,7 @@ export default function SolarERPApp({
 
                     {/* Proposal Details */}
                     <div className="mt-8 space-y-6">
-                      <div className="text-center bg-gray-50 p-4 rounded-xl border border-gray-100">
+                      <div className="text-center bg-gray-50 p-4 rounded-md border border-gray-100">
                         <h3 className="text-sm font-bold text-[#1E3A8A] uppercase tracking-wider">Solar Power Proposal</h3>
                         <p className="text-[11px] text-gray-500 mt-1">Proposal Number: <b className="text-gray-900">{previewQuote.proposalNumber}</b> | Valid for 7 Days</p>
                       </div>
@@ -1653,7 +1652,7 @@ export default function SolarERPApp({
                       </div>
 
                       {/* Benefits Section */}
-                      <div className="space-y-3 bg-amber-50/40 p-5 rounded-2xl border border-amber-100">
+                      <div className="space-y-3 bg-amber-50/40 p-5 rounded-md border border-amber-100">
                         <span className="text-xs font-bold text-amber-900 block uppercase tracking-wider text-center">TOP BENEFITS OF GOING WITH SOLAR</span>
                         <div className="grid grid-cols-2 gap-4 text-[11px] font-semibold text-amber-950">
                           <div className="space-y-2">
@@ -1703,7 +1702,7 @@ export default function SolarERPApp({
                     </div>
 
                     {/* Vocal 4 Local Banner */}
-                    <div className="flex flex-col items-center p-2.5 bg-gradient-to-r from-orange-500/10 via-white to-green-500/10 border border-gray-200 rounded-xl">
+                    <div className="flex flex-col items-center p-2.5 bg-gradient-to-r from-orange-500/10 via-white to-green-500/10 border border-gray-200 rounded-md">
                       <div className="flex items-center gap-1.5">
                         <span className="h-2 w-5 bg-orange-500 block rounded-sm"></span>
                         <span className="h-2 w-5 bg-white border border-gray-300 block rounded-sm flex items-center justify-center"><span className="h-1.5 w-1.5 rounded-full bg-blue-900 block"></span></span>
@@ -1725,7 +1724,7 @@ export default function SolarERPApp({
                     </div>
 
                     {/* To Section */}
-                    <div className="mt-8 space-y-1 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <div className="mt-8 space-y-1 bg-gray-50 p-4 rounded-md border border-gray-100">
                       <span className="text-gray-400 font-bold block text-[9px] uppercase">TO,</span>
                       <span className="text-sm font-bold text-gray-900 block">{previewQuote.client ? previewQuote.client.name : 'Unknown Client'}</span>
                       <span className="text-gray-600 block mt-0.5">Mob: {previewQuote.client ? previewQuote.client.mobile : '-'}</span>
@@ -1746,7 +1745,7 @@ export default function SolarERPApp({
                       <p className="text-justify">
                         This has reference to our discussion we had with your good self for installation of <b>{previewQuote.capacity} kW</b> Solar Power Plant at your premises for captive use. We are pleased to present our techno-commercial offer for Engineering, supply, Installation and Testing & Commissioning of On Grid solar power plant for the above mentioned requirement.
                       </p>
-                      <p className="text-justify font-semibold text-gray-800 bg-blue-50 p-3 rounded-lg border border-blue-100">
+                      <p className="text-justify font-semibold text-gray-800 bg-blue-50 p-3 rounded-md border border-blue-100">
                         This quotation/proposal has been designed based on Electricity Bill parameters. The Solar Power Plant of <b>{previewQuote.capacity} kW</b> DC capacities is estimated to generate approx. AC <b>{Math.round(previewQuote.capacity * 1440).toLocaleString('en-IN')} units</b> annually.
                       </p>
                       <p>
@@ -1861,7 +1860,7 @@ export default function SolarERPApp({
                       </div>
 
                       {/* Right: Cancellation & Commercials */}
-                      <div className="space-y-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                      <div className="space-y-4 bg-gray-50 p-4 rounded-md border border-gray-100">
                         <div className="space-y-2">
                           <span className="font-bold text-red-700 block uppercase border-b">Cancellation Charges</span>
                           <ul className="list-disc pl-4 space-y-1 text-gray-600 text-[9px]">
@@ -1890,7 +1889,7 @@ export default function SolarERPApp({
                               <span>GST Amount ({previewQuote.gstRate}%):</span>
                               <span className="font-semibold text-gray-800">₹{previewQuote.gstAmount.toLocaleString('en-IN')}</span>
                             </div>
-                            <div className="flex justify-between border-t border-gray-300 pt-2 text-sm font-black text-blue-900 bg-blue-50/50 p-2 rounded-lg">
+                            <div className="flex justify-between border-t border-gray-300 pt-2 text-sm font-black text-blue-900 bg-blue-50/50 p-2 rounded-md">
                               <span>Grand Total (INR):</span>
                               <span>₹{previewQuote.grandTotal.toLocaleString('en-IN')}</span>
                             </div>
@@ -1900,7 +1899,7 @@ export default function SolarERPApp({
                     </div>
 
                     {/* Bank Account Details */}
-                    <div className="p-4 bg-blue-50/60 rounded-xl border border-blue-100 text-[10px] space-y-2">
+                    <div className="p-4 bg-blue-50/60 rounded-md border border-blue-100 text-[10px] space-y-2">
                       <span className="font-bold text-blue-950 block uppercase tracking-wider">BANK DETAILS FOR WIRE TRANSFER</span>
                       <div className="grid grid-cols-2 gap-4 text-blue-900 font-semibold">
                         <div>
@@ -1953,7 +1952,7 @@ export default function SolarERPApp({
               </div>
 
               {payments.length === 0 ? (
-                <div className="bg-white border border-dashed border-gray-200 p-12 text-center rounded-2xl">
+                <div className="bg-white border border-dashed border-gray-200 p-12 text-center rounded-md">
                   <IndianRupee className="h-8 w-8 text-gray-300 mx-auto mb-2" />
                   <span className="text-xs font-bold text-gray-800 block">No Payments Recorded</span>
                   <p className="text-[11px] text-gray-400 mt-1 max-w-xs mx-auto">Track advance collections and issue billing receipts using the Record Payment button.</p>
@@ -1986,7 +1985,7 @@ export default function SolarERPApp({
                                   handleDeletePayment(p.id);
                                 }
                               }}
-                              className="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors border border-red-100 shadow-sm flex items-center justify-center mx-auto"
+                              className="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-md transition-colors border border-red-100 shadow-sm flex items-center justify-center mx-auto"
                               title="Delete Payment"
                             >
                               <Trash2 className="h-4 w-4" />
@@ -2013,7 +2012,7 @@ export default function SolarERPApp({
               </div>
 
               {combinedOverduePayments.length === 0 ? (
-                <div className="bg-white border border-[#E5E7EB] p-12 text-center rounded-2xl">
+                <div className="bg-white border border-[#E5E7EB] p-12 text-center rounded-md">
                   <CheckCircle className="h-8 w-8 text-emerald-500 mx-auto mb-2" />
                   <span className="text-xs font-bold text-emerald-900 block">No Overdue Payments</span>
                   <p className="text-[11px] text-gray-400 mt-1 max-w-xs mx-auto">All client invoices are fully paid or their active payment deadlines are in the future.</p>
@@ -2055,7 +2054,7 @@ export default function SolarERPApp({
                                     }));
                                     setIsPaymentModalOpen(true);
                                   }}
-                                  className="px-3 py-1.5 bg-orange-50 text-orange-700 rounded-lg hover:bg-orange-100 text-xs font-semibold transition-colors border border-orange-100 shadow-sm"
+                                  className="px-3 py-1.5 bg-orange-50 text-orange-700 rounded-md hover:bg-orange-100 text-xs font-semibold transition-colors border border-orange-100 shadow-sm"
                                 >
                                   Collect Balance
                                 </button>
@@ -2075,7 +2074,7 @@ export default function SolarERPApp({
                                     setIsOverdueModalOpen(true);
                                   }}
                                   title="Edit Manual Overdue"
-                                  className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-600 transition-colors"
+                                  className="p-1.5 hover:bg-gray-100 rounded-md text-gray-600 transition-colors"
                                 >
                                   <Edit className="h-3.5 w-3.5" />
                                 </button>
@@ -2087,7 +2086,7 @@ export default function SolarERPApp({
                                   }
                                 }}
                                 title="Delete Overdue Record"
-                                className="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors border border-red-100 shadow-sm flex items-center justify-center"
+                                className="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-md transition-colors border border-red-100 shadow-sm flex items-center justify-center"
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
                               </button>
@@ -2109,19 +2108,19 @@ export default function SolarERPApp({
       {/* INVENTORY MODAL */}
       {isInventoryModalOpen && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <form onSubmit={handleCreateInventoryItem} className="bg-white rounded-2xl w-full max-w-md shadow-2xl flex flex-col max-h-[90vh]">
+          <form onSubmit={handleCreateInventoryItem} className="bg-white rounded-md w-full max-w-md shadow-2xl flex flex-col max-h-[90vh]">
             <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
               <div>
                 <h2 className="text-xl font-bold text-gray-900">{editingInventoryId ? 'Edit Stock Item' : 'Add Stock Item'}</h2>
                 <p className="text-xs text-gray-500 mt-1">Manage components and pricing</p>
               </div>
-              <button type="button" onClick={() => setIsInventoryModalOpen(false)} className="text-gray-400 hover:bg-gray-100 p-2 rounded-xl transition-colors"><X className="h-5 w-5" /></button>
+              <button type="button" onClick={() => setIsInventoryModalOpen(false)} className="text-gray-400 hover:bg-gray-100 p-2 rounded-md transition-colors"><X className="h-5 w-5" /></button>
             </div>
 
             <div className="p-6 overflow-y-auto flex-1 space-y-4">
               <div>
                 <label className="block text-xs font-bold text-gray-700 mb-1">Category</label>
-                <select required value={inventoryForm.category} onChange={e => setInventoryForm({ ...inventoryForm, category: e.target.value })} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-[#1E3A8A] transition-all">
+                <select required value={inventoryForm.category} onChange={e => setInventoryForm({ ...inventoryForm, category: e.target.value })} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-[#1E3A8A] transition-all">
                   <option value="Panel">Solar Panel</option>
                   <option value="Inverter">Inverter</option>
                   <option value="Structure">Structure</option>
@@ -2134,34 +2133,34 @@ export default function SolarERPApp({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-gray-700 mb-1">Brand</label>
-                  <input required type="text" placeholder="e.g. Waaree" value={inventoryForm.brand} onChange={e => setInventoryForm({ ...inventoryForm, brand: e.target.value })} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#1E3A8A]" />
+                  <input required type="text" placeholder="e.g. Waaree" value={inventoryForm.brand} onChange={e => setInventoryForm({ ...inventoryForm, brand: e.target.value })} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm focus:ring-2 focus:ring-[#1E3A8A]" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-700 mb-1">Model Name</label>
-                  <input type="text" placeholder="e.g. MAX 50KTL3" value={inventoryForm.modelName} onChange={e => setInventoryForm({ ...inventoryForm, modelName: e.target.value })} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#1E3A8A]" />
+                  <input type="text" placeholder="e.g. MAX 50KTL3" value={inventoryForm.modelName} onChange={e => setInventoryForm({ ...inventoryForm, modelName: e.target.value })} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm focus:ring-2 focus:ring-[#1E3A8A]" />
                 </div>
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-gray-700 mb-1">Specifications</label>
-                <input type="text" placeholder="e.g. 540Wp Mono PERC" value={inventoryForm.specifications} onChange={e => setInventoryForm({ ...inventoryForm, specifications: e.target.value })} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#1E3A8A]" />
+                <input type="text" placeholder="e.g. 540Wp Mono PERC" value={inventoryForm.specifications} onChange={e => setInventoryForm({ ...inventoryForm, specifications: e.target.value })} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm focus:ring-2 focus:ring-[#1E3A8A]" />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-gray-700 mb-1">Unit Price (₹)</label>
-                  <input required type="number" step="0.01" min="0" placeholder="0.00" value={inventoryForm.unitPrice} onChange={e => setInventoryForm({ ...inventoryForm, unitPrice: e.target.value })} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#1E3A8A]" />
+                  <input required type="number" step="0.01" min="0" placeholder="0.00" value={inventoryForm.unitPrice} onChange={e => setInventoryForm({ ...inventoryForm, unitPrice: e.target.value })} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm focus:ring-2 focus:ring-[#1E3A8A]" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-700 mb-1">Stock Quantity</label>
-                  <input required type="number" min="0" placeholder="0" value={inventoryForm.stockQuantity} onChange={e => setInventoryForm({ ...inventoryForm, stockQuantity: e.target.value })} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#1E3A8A]" />
+                  <input required type="number" min="0" placeholder="0" value={inventoryForm.stockQuantity} onChange={e => setInventoryForm({ ...inventoryForm, stockQuantity: e.target.value })} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm focus:ring-2 focus:ring-[#1E3A8A]" />
                 </div>
               </div>
             </div>
 
-            <div className="p-6 border-t border-gray-100 bg-gray-50/50 flex gap-3 justify-end rounded-b-2xl">
-              <button type="button" onClick={() => setIsInventoryModalOpen(false)} className="px-5 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-200 bg-gray-100 rounded-xl transition-colors">Cancel</button>
-              <button type="submit" className="px-5 py-2.5 text-sm font-semibold text-white bg-[#1E3A8A] hover:bg-blue-900 rounded-xl transition-colors shadow-sm">{editingInventoryId ? 'Update Stock' : 'Add to Inventory'}</button>
+            <div className="p-6 border-t border-gray-100 bg-gray-50/50 flex gap-3 justify-end rounded-b-md">
+              <button type="button" onClick={() => setIsInventoryModalOpen(false)} className="px-5 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-200 bg-gray-100 rounded-md transition-colors">Cancel</button>
+              <button type="submit" className="px-5 py-2.5 text-sm font-semibold text-white bg-[#1E3A8A] hover:bg-blue-900 rounded-md transition-colors shadow-sm">{editingInventoryId ? 'Update Stock' : 'Add to Inventory'}</button>
             </div>
           </form>
         </div>
@@ -2169,7 +2168,7 @@ export default function SolarERPApp({
 
       {isClientModalOpen && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-start justify-center z-50 p-4 sm:p-6 overflow-y-auto">
-          <form onSubmit={handleCreateClient} className="bg-white rounded-2xl w-full max-w-md p-6 space-y-4 premium-shadow text-xs my-8">
+          <form onSubmit={handleCreateClient} className="bg-white rounded-md w-full max-w-md p-6 space-y-4 premium-shadow text-xs my-8">
             <h3 className="text-sm font-bold text-gray-900">Add Client</h3>
 
             <div className="space-y-1">
@@ -2179,7 +2178,7 @@ export default function SolarERPApp({
                 required
                 value={clientForm.name}
                 onChange={(e) => setClientForm({ ...clientForm, name: e.target.value })}
-                className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs"
+                className="w-full p-2 border border-gray-200 rounded-md bg-gray-50 text-xs"
               />
             </div>
 
@@ -2190,7 +2189,7 @@ export default function SolarERPApp({
                 required
                 value={clientForm.mobile}
                 onChange={(e) => setClientForm({ ...clientForm, mobile: e.target.value })}
-                className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs"
+                className="w-full p-2 border border-gray-200 rounded-md bg-gray-50 text-xs"
               />
             </div>
 
@@ -2202,7 +2201,7 @@ export default function SolarERPApp({
                 required
                 value={clientForm.capacity}
                 onChange={(e) => setClientForm({ ...clientForm, capacity: e.target.value })}
-                className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs"
+                className="w-full p-2 border border-gray-200 rounded-md bg-gray-50 text-xs"
               />
             </div>
 
@@ -2213,7 +2212,7 @@ export default function SolarERPApp({
                 placeholder="e.g. 450000"
                 value={clientForm.projectPrice}
                 onChange={(e) => setClientForm({ ...clientForm, projectPrice: e.target.value })}
-                className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs"
+                className="w-full p-2 border border-gray-200 rounded-md bg-gray-50 text-xs"
               />
             </div>
 
@@ -2224,7 +2223,7 @@ export default function SolarERPApp({
                 required
                 value={clientForm.address}
                 onChange={(e) => setClientForm({ ...clientForm, address: e.target.value })}
-                className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs"
+                className="w-full p-2 border border-gray-200 rounded-md bg-gray-50 text-xs"
               />
             </div>
 
@@ -2238,7 +2237,7 @@ export default function SolarERPApp({
                   value={clientForm.panelPreference}
                   onChange={(e) => setClientForm({ ...clientForm, panelPreference: e.target.value })}
                   placeholder="e.g. Waaree Solar"
-                  className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs"
+                  className="w-full p-2 border border-gray-200 rounded-md bg-gray-50 text-xs"
                 />
               </div>
               <div className="space-y-1">
@@ -2248,14 +2247,14 @@ export default function SolarERPApp({
                   value={clientForm.inverterPreference}
                   onChange={(e) => setClientForm({ ...clientForm, inverterPreference: e.target.value })}
                   placeholder="e.g. Growatt"
-                  className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs"
+                  className="w-full p-2 border border-gray-200 rounded-md bg-gray-50 text-xs"
                 />
               </div>
             </div>
 
             <div className="flex justify-end gap-2 pt-2">
-              <button type="button" onClick={() => setIsClientModalOpen(false)} className="px-4 py-2 border border-gray-200 rounded-xl">Cancel</button>
-              <button type="submit" className="px-4 py-2 bg-[#1E3A8A] text-white rounded-xl">Add Client</button>
+              <button type="button" onClick={() => setIsClientModalOpen(false)} className="px-4 py-2 border border-gray-200 rounded-md">Cancel</button>
+              <button type="submit" className="px-4 py-2 bg-[#1E3A8A] text-white rounded-md">Add Client</button>
             </div>
           </form>
         </div>
@@ -2264,14 +2263,14 @@ export default function SolarERPApp({
       {/* QUOTATION DIALOG MODAL */}
       {isQuoteModalOpen && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-start justify-center z-50 p-4 sm:p-6 overflow-y-auto">
-          <form onSubmit={handleCreateQuotation} className="bg-white rounded-2xl w-full max-w-2xl p-6 space-y-4 premium-shadow text-xs my-8">
+          <form onSubmit={handleCreateQuotation} className="bg-white rounded-md w-full max-w-2xl p-6 space-y-4 premium-shadow text-xs my-8">
             <div className="flex justify-between items-center mb-2">
               <h3 className="text-sm font-bold text-gray-900">{editingQuoteId ? 'Edit Quotation' : 'Create Quotation'}</h3>
               <button type="button" onClick={() => { setIsQuoteModalOpen(false); setEditingQuoteId(null); }} className="text-gray-400 hover:text-gray-600 transition-colors bg-gray-100 hover:bg-gray-200 p-1 rounded-full"><X className="h-4 w-4" /></button>
             </div>
 
             {/* Toggle between Select and Manual client */}
-            <div className="bg-gray-50 p-3 rounded-xl border border-gray-200/50 flex items-center justify-between mb-2">
+            <div className="bg-gray-50 p-3 rounded-md border border-gray-200/50 flex items-center justify-between mb-2">
               <span className="font-semibold text-gray-700">Client Entry Method:</span>
               <div className="flex gap-4">
                 <label className="flex items-center gap-1.5 cursor-pointer font-medium text-gray-800">
@@ -2310,7 +2309,7 @@ export default function SolarERPApp({
                 </div>
               ) : (
                 /* Manual Client Inputs */
-                <div className="col-span-1 sm:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-3 bg-blue-50/20 p-3 rounded-xl border border-blue-100">
+                <div className="col-span-1 sm:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-3 bg-blue-50/20 p-3 rounded-md border border-blue-100">
                   <div className="space-y-1">
                     <label className="font-semibold text-gray-600">Client Name *</label>
                     <input
@@ -2319,7 +2318,7 @@ export default function SolarERPApp({
                       value={manualClientName}
                       onChange={(e) => setManualClientName(e.target.value)}
                       placeholder="e.g. Harshit Sharma"
-                      className="w-full p-2 border border-gray-200 rounded-xl bg-white text-xs"
+                      className="w-full p-2 border border-gray-200 rounded-md bg-white text-xs"
                     />
                   </div>
                   <div className="space-y-1">
@@ -2330,7 +2329,7 @@ export default function SolarERPApp({
                       value={manualClientMobile}
                       onChange={(e) => setManualClientMobile(e.target.value)}
                       placeholder="9988776655"
-                      className="w-full p-2 border border-gray-200 rounded-xl bg-white text-xs"
+                      className="w-full p-2 border border-gray-200 rounded-md bg-white text-xs"
                     />
                   </div>
                   <div className="space-y-1">
@@ -2340,7 +2339,7 @@ export default function SolarERPApp({
                       value={manualClientEmail}
                       onChange={(e) => setManualClientEmail(e.target.value)}
                       placeholder="harshit@domain.com"
-                      className="w-full p-2 border border-gray-200 rounded-xl bg-white text-xs"
+                      className="w-full p-2 border border-gray-200 rounded-md bg-white text-xs"
                     />
                   </div>
                 </div>
@@ -2353,7 +2352,7 @@ export default function SolarERPApp({
                   step="0.1"
                   value={quoteForm.capacity}
                   onChange={(e) => setQuoteForm({ ...quoteForm, capacity: e.target.value })}
-                  className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs"
+                  className="w-full p-2 border border-gray-200 rounded-md bg-gray-50 text-xs"
                 />
               </div>
 
@@ -2364,7 +2363,7 @@ export default function SolarERPApp({
                   required
                   value={quoteForm.dueDate}
                   onChange={(e) => setQuoteForm({ ...quoteForm, dueDate: e.target.value })}
-                  className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs"
+                  className="w-full p-2 border border-gray-200 rounded-md bg-gray-50 text-xs"
                 />
               </div>
             </div>
@@ -2374,14 +2373,14 @@ export default function SolarERPApp({
             <div className="grid grid-cols-1 gap-3">
               <div className="space-y-1">
                 <label className="font-semibold text-gray-600">Panel Brand</label>
-                <input type="text" value={quoteForm.panelBrand} onChange={(e) => setQuoteForm({ ...quoteForm, panelBrand: e.target.value })} className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs" />
+                <input type="text" value={quoteForm.panelBrand} onChange={(e) => setQuoteForm({ ...quoteForm, panelBrand: e.target.value })} className="w-full p-2 border border-gray-200 rounded-md bg-gray-50 text-xs" />
               </div>
             </div>
 
             <div className="grid grid-cols-1 gap-3">
               <div className="space-y-1">
                 <label className="font-semibold text-gray-600">Inverter Brand</label>
-                <input type="text" value={quoteForm.inverterBrand} onChange={(e) => setQuoteForm({ ...quoteForm, inverterBrand: e.target.value })} className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs" />
+                <input type="text" value={quoteForm.inverterBrand} onChange={(e) => setQuoteForm({ ...quoteForm, inverterBrand: e.target.value })} className="w-full p-2 border border-gray-200 rounded-md bg-gray-50 text-xs" />
               </div>
             </div>
 
@@ -2401,7 +2400,7 @@ export default function SolarERPApp({
                         const newItems = [...quoteForm.items];
                         newItems[idx].description = e.target.value;
                         setQuoteForm({ ...quoteForm, items: newItems });
-                      }} className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs" placeholder="E.g. Extra Wire" required />
+                      }} className="w-full p-2 border border-gray-200 rounded-md bg-gray-50 text-xs" placeholder="E.g. Extra Wire" required />
                     </div>
                     <div className="w-1/3 space-y-1">
                       <label className="text-[10px] font-semibold text-gray-500 uppercase">Amount (₹)</label>
@@ -2409,12 +2408,12 @@ export default function SolarERPApp({
                         const newItems = [...quoteForm.items];
                         newItems[idx].amount = e.target.value;
                         setQuoteForm({ ...quoteForm, items: newItems });
-                      }} className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs" required />
+                      }} className="w-full p-2 border border-gray-200 rounded-md bg-gray-50 text-xs" required />
                     </div>
                     <button type="button" onClick={() => {
                       const newItems = quoteForm.items.filter((_, i) => i !== idx);
                       setQuoteForm({ ...quoteForm, items: newItems });
-                    }} className="p-2.5 mb-0 text-red-500 hover:bg-red-50 rounded-xl border border-transparent hover:border-red-100 transition">
+                    }} className="p-2.5 mb-0 text-red-500 hover:bg-red-50 rounded-md border border-transparent hover:border-red-100 transition">
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
@@ -2432,7 +2431,7 @@ export default function SolarERPApp({
                   const gst = parseFloat(quoteForm.gstRate) || 0;
                   const base = final / (1 + (gst / 100));
                   setQuoteForm({ ...quoteForm, finalPrice: e.target.value, projectCost: base });
-                }} className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs font-bold text-blue-900" />
+                }} className="w-full p-2 border border-gray-200 rounded-md bg-gray-50 text-xs font-bold text-blue-900" />
               </div>
               <div className="space-y-1">
                 <label className="font-semibold text-gray-600">GST Percentage (%) *</label>
@@ -2441,11 +2440,11 @@ export default function SolarERPApp({
                   const final = parseFloat(quoteForm.finalPrice) || 0;
                   const base = final / (1 + (gst / 100));
                   setQuoteForm({ ...quoteForm, gstRate: e.target.value, projectCost: base });
-                }} className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs font-bold" />
+                }} className="w-full p-2 border border-gray-200 rounded-md bg-gray-50 text-xs font-bold" />
               </div>
             </div>
 
-            <div className="mt-3 bg-emerald-50/60 p-3 rounded-xl border border-emerald-100 flex justify-between items-center">
+            <div className="mt-3 bg-emerald-50/60 p-3 rounded-md border border-emerald-100 flex justify-between items-center">
               <span className="font-bold text-emerald-800">Calculated Base Price (Excl. GST):</span>
               <span className="text-lg font-black text-emerald-700">
                 ₹{(quoteForm.projectCost || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}
@@ -2453,8 +2452,8 @@ export default function SolarERPApp({
             </div>
 
             <div className="flex justify-end gap-2 pt-2">
-              <button type="button" onClick={() => { setIsQuoteModalOpen(false); setEditingQuoteId(null); }} className="px-4 py-2 border border-gray-200 rounded-xl">Cancel</button>
-              <button type="submit" className="px-4 py-2 bg-[#1E3A8A] text-white rounded-xl flex items-center gap-2">
+              <button type="button" onClick={() => { setIsQuoteModalOpen(false); setEditingQuoteId(null); }} className="px-4 py-2 border border-gray-200 rounded-md">Cancel</button>
+              <button type="submit" className="px-4 py-2 bg-[#1E3A8A] text-white rounded-md flex items-center gap-2">
                 {editingQuoteId ? 'Save Changes' : 'Generate Proposal'}
               </button>
             </div>
@@ -2465,7 +2464,7 @@ export default function SolarERPApp({
       {/* PAYMENT DIALOG MODAL */}
       {isPaymentModalOpen && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-start justify-center z-50 p-4 sm:p-6 overflow-y-auto">
-          <form onSubmit={handleCreatePayment} className="bg-white rounded-2xl w-full max-w-md p-6 space-y-4 premium-shadow text-xs my-8">
+          <form onSubmit={handleCreatePayment} className="bg-white rounded-md w-full max-w-md p-6 space-y-4 premium-shadow text-xs my-8">
             <h3 className="text-sm font-bold text-gray-900">Record Client Payment</h3>
 
             <div className="flex items-center gap-2 pb-1">
@@ -2496,7 +2495,7 @@ export default function SolarERPApp({
                 />
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-gray-50 border border-gray-100 rounded-xl">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-gray-50 border border-gray-100 rounded-md">
                 <div className="space-y-1">
                   <label className="font-semibold text-gray-600">Client Name *</label>
                   <input
@@ -2505,7 +2504,7 @@ export default function SolarERPApp({
                     value={manualClientPaymentName}
                     onChange={(e) => setManualClientPaymentName(e.target.value)}
                     placeholder="Enter client name"
-                    className="w-full p-2 border border-gray-200 rounded-xl bg-white text-xs"
+                    className="w-full p-2 border border-gray-200 rounded-md bg-white text-xs"
                   />
                 </div>
                 <div className="space-y-1">
@@ -2516,7 +2515,7 @@ export default function SolarERPApp({
                     value={manualClientPaymentMobile}
                     onChange={(e) => setManualClientPaymentMobile(e.target.value)}
                     placeholder="9988776655"
-                    className="w-full p-2 border border-gray-200 rounded-xl bg-white text-xs"
+                    className="w-full p-2 border border-gray-200 rounded-md bg-white text-xs"
                   />
                 </div>
               </div>
@@ -2530,7 +2529,7 @@ export default function SolarERPApp({
                   required
                   value={paymentForm.amount}
                   onChange={(e) => setPaymentForm({ ...paymentForm, amount: e.target.value })}
-                  className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs"
+                  className="w-full p-2 border border-gray-200 rounded-md bg-gray-50 text-xs"
                 />
               </div>
               <div className="space-y-1">
@@ -2556,13 +2555,13 @@ export default function SolarERPApp({
                 type="text"
                 value={paymentForm.notes}
                 onChange={(e) => setPaymentForm({ ...paymentForm, notes: e.target.value })}
-                className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs"
+                className="w-full p-2 border border-gray-200 rounded-md bg-gray-50 text-xs"
               />
             </div>
 
             <div className="flex justify-end gap-2 pt-2">
-              <button type="button" onClick={() => setIsPaymentModalOpen(false)} className="px-4 py-2 border border-gray-200 rounded-xl">Cancel</button>
-              <button type="submit" className="px-4 py-2 bg-[#1E3A8A] text-white rounded-xl">Log Payment</button>
+              <button type="button" onClick={() => setIsPaymentModalOpen(false)} className="px-4 py-2 border border-gray-200 rounded-md">Cancel</button>
+              <button type="submit" className="px-4 py-2 bg-[#1E3A8A] text-white rounded-md">Log Payment</button>
             </div>
           </form>
         </div>
@@ -2571,20 +2570,20 @@ export default function SolarERPApp({
       {/* CLIENT DETAILS LEDGER MODAL */}
       {isClientDetailOpen && selectedClient && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-start justify-center z-50 p-4 sm:p-6 overflow-y-auto">
-          <div className="bg-white rounded-2xl w-full max-w-4xl premium-shadow overflow-hidden flex flex-col my-8 text-xs">
+          <div className="bg-white rounded-md w-full max-w-4xl premium-shadow overflow-hidden flex flex-col my-8 text-xs">
             <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
               <div>
                 <h2 className="text-lg font-bold text-gray-900">{selectedClient.name} Ledger File</h2>
                 <p className="text-xs text-gray-500">Financial ledger details and quotation history.</p>
               </div>
-              <button onClick={() => setIsClientDetailOpen(false)} className="p-2 rounded-xl hover:bg-gray-200">
+              <button onClick={() => setIsClientDetailOpen(false)} className="p-2 rounded-md hover:bg-gray-200">
                 <X className="h-5 w-5 text-gray-600" />
               </button>
             </div>
 
             <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Profile Details */}
-              <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100 space-y-4">
+              <div className="bg-gray-50 rounded-md p-5 border border-gray-100 space-y-4">
                 <span className="font-bold text-gray-700 block uppercase tracking-wider text-[10px]">Client Details</span>
                 <div>
                   <span className="text-[#6B7280] block">Mobile:</span>
@@ -2613,7 +2612,7 @@ export default function SolarERPApp({
                 <div className="space-y-3">
                   <span className="font-bold text-sm text-gray-800 block">Quotations history</span>
                   {quotations.filter(q => q.clientId === selectedClient.id).map(q => (
-                    <div key={q.id} className="p-3 border border-gray-200 rounded-xl flex items-center justify-between">
+                    <div key={q.id} className="p-3 border border-gray-200 rounded-md flex items-center justify-between">
                       <div>
                         <span className="font-bold text-gray-900 block">{q.proposalNumber} ({q.capacity}kW)</span>
                         <span className="text-gray-500 mt-0.5 block">Total: ₹{q.grandTotal.toLocaleString('en-IN')}</span>
@@ -2629,7 +2628,7 @@ export default function SolarERPApp({
                 <div className="space-y-3">
                   <span className="font-bold text-sm text-gray-800 block">Collections history</span>
                   {payments.filter(p => p.clientId === selectedClient.id).map(p => (
-                    <div key={p.id} className="p-3 border border-gray-200 rounded-xl flex items-center justify-between bg-emerald-50/20">
+                    <div key={p.id} className="p-3 border border-gray-200 rounded-md flex items-center justify-between bg-emerald-50/20">
                       <div>
                         <span className="font-bold text-emerald-950 block">{p.receiptNumber}</span>
                         <span className="text-gray-500 mt-0.5 block">{p.paymentMode} - {p.notes || ''}</span>
@@ -2650,7 +2649,7 @@ export default function SolarERPApp({
       {/* OVERDUE DIALOG MODAL */}
       {isOverdueModalOpen && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-start justify-center z-50 p-6 overflow-y-auto">
-          <form onSubmit={handleSaveOverdueRecord} className="bg-white rounded-2xl w-full max-w-md p-6 space-y-4 premium-shadow text-xs my-8">
+          <form onSubmit={handleSaveOverdueRecord} className="bg-white rounded-md w-full max-w-md p-6 space-y-4 premium-shadow text-xs my-8">
             <h3 className="text-sm font-bold text-gray-900">
               {editingOverdueRecord ? 'Edit Overdue Record' : 'Add Overdue Record'}
             </h3>
@@ -2662,7 +2661,7 @@ export default function SolarERPApp({
                 required
                 value={overdueForm.clientName}
                 onChange={(e) => setOverdueForm({ ...overdueForm, clientName: e.target.value })}
-                className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs"
+                className="w-full p-2 border border-gray-200 rounded-md bg-gray-50 text-xs"
                 placeholder="Enter client name"
               />
             </div>
@@ -2674,7 +2673,7 @@ export default function SolarERPApp({
                   type="text"
                   value={overdueForm.proposalNumber}
                   onChange={(e) => setOverdueForm({ ...overdueForm, proposalNumber: e.target.value })}
-                  className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs"
+                  className="w-full p-2 border border-gray-200 rounded-md bg-gray-50 text-xs"
                   placeholder="e.g. QT-MAN-1234"
                 />
               </div>
@@ -2684,7 +2683,7 @@ export default function SolarERPApp({
                   type="date"
                   value={overdueForm.dueDate}
                   onChange={(e) => setOverdueForm({ ...overdueForm, dueDate: e.target.value })}
-                  className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs"
+                  className="w-full p-2 border border-gray-200 rounded-md bg-gray-50 text-xs"
                 />
               </div>
             </div>
@@ -2702,7 +2701,7 @@ export default function SolarERPApp({
                     const unpaid = total !== '' && paid !== '' ? Math.max(0, parseFloat(total) - parseFloat(paid)) : '';
                     setOverdueForm({ ...overdueForm, grandTotal: total, unpaidBalance: unpaid.toString() });
                   }}
-                  className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs"
+                  className="w-full p-2 border border-gray-200 rounded-md bg-gray-50 text-xs"
                   placeholder="0"
                 />
               </div>
@@ -2717,7 +2716,7 @@ export default function SolarERPApp({
                     const unpaid = total !== '' && paid !== '' ? Math.max(0, parseFloat(total) - parseFloat(paid)) : '';
                     setOverdueForm({ ...overdueForm, clientPayments: paid, unpaidBalance: unpaid.toString() });
                   }}
-                  className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs"
+                  className="w-full p-2 border border-gray-200 rounded-md bg-gray-50 text-xs"
                   placeholder="0"
                 />
               </div>
@@ -2727,7 +2726,7 @@ export default function SolarERPApp({
                   type="number"
                   value={overdueForm.unpaidBalance}
                   onChange={(e) => setOverdueForm({ ...overdueForm, unpaidBalance: e.target.value })}
-                  className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs text-red-600 font-bold"
+                  className="w-full p-2 border border-gray-200 rounded-md bg-gray-50 text-xs text-red-600 font-bold"
                   placeholder="0"
                 />
               </div>
@@ -2740,11 +2739,11 @@ export default function SolarERPApp({
                   setIsOverdueModalOpen(false);
                   setEditingOverdueRecord(null);
                 }}
-                className="px-4 py-2 border border-gray-200 rounded-xl"
+                className="px-4 py-2 border border-gray-200 rounded-md"
               >
                 Cancel
               </button>
-              <button type="submit" className="px-4 py-2 bg-red-600 text-white font-bold rounded-xl">
+              <button type="submit" className="px-4 py-2 bg-red-600 text-white font-bold rounded-md">
                 {editingOverdueRecord ? 'Update Record' : 'Add Record'}
               </button>
             </div>
