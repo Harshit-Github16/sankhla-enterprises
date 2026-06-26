@@ -1,0 +1,460 @@
+{
+  "Company": [
+    {
+      "id": "co_sankhla_01",
+      "name": "Sankhla Solar Enterprises",
+      "logo": "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=200&auto=format&fit=crop&q=80",
+      "gstNumber": "08AAAAA1111A1Z1",
+      "panNumber": "AAAAA1111A",
+      "bankName": "State Bank of India",
+      "bankAccountNo": "330011223344",
+      "bankIfsc": "SBIN0001234",
+      "bankBranch": "Jodhpur Main Branch",
+      "address": "12, Industrial Area, Phase II",
+      "city": "Jodhpur",
+      "state": "Rajasthan",
+      "pincode": "342001",
+      "termsAndConditions": "1. 50% Advance with Purchase Order.\n2. 40% On material delivery at site.\n3. 10% Post successful commissioning.\n4. Net metering approvals depend on state utility rules.",
+      "signatureUrl": "https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=100&auto=format&fit=crop&q=80",
+      "createdAt": "2026-06-26T07:02:08.365Z",
+      "updatedAt": "2026-06-26T07:02:08.365Z"
+    },
+    {
+      "id": "co_apex_02",
+      "name": "Apex Renewable Energy",
+      "logo": "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=200&auto=format&fit=crop&q=80",
+      "gstNumber": "27BBBBB2222B2Z2",
+      "panNumber": "BBBBB2222B",
+      "bankName": "HDFC Bank",
+      "bankAccountNo": "50100200300400",
+      "bankIfsc": "HDFC0000987",
+      "bankBranch": "Mumbai Andheri",
+      "address": "405, Signature Towers, Link Road",
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "pincode": "400053",
+      "termsAndConditions": "Standard 60-30-10 Payment Policy.",
+      "createdAt": "2026-06-26T07:02:08.365Z",
+      "updatedAt": "2026-06-26T07:02:08.365Z"
+    }
+  ],
+  "User": [
+    {
+      "id": "usr_super",
+      "email": "admin@solarsaas.com",
+      "password": "password123",
+      "role": "SUPER_ADMIN",
+      "companyId": null,
+      "firstName": "Rajesh",
+      "lastName": "Sankhla",
+      "phone": "9876543210",
+      "active": true,
+      "createdAt": "2026-06-26T07:02:08.365Z",
+      "updatedAt": "2026-06-26T07:02:08.365Z"
+    },
+    {
+      "id": "usr_owner",
+      "email": "owner@sankhla.com",
+      "password": "password123",
+      "role": "COMPANY_OWNER",
+      "companyId": "co_sankhla_01",
+      "firstName": "Jayesh",
+      "lastName": "Sankhla",
+      "phone": "9988776655",
+      "active": true,
+      "createdAt": "2026-06-26T07:02:08.365Z",
+      "updatedAt": "2026-06-26T07:02:08.365Z"
+    },
+    {
+      "id": "usr_sales",
+      "email": "sales@sankhla.com",
+      "password": "password123",
+      "role": "SALES_MANAGER",
+      "companyId": "co_sankhla_01",
+      "firstName": "Vikram",
+      "lastName": "Rathore",
+      "phone": "9829012345",
+      "active": true,
+      "createdAt": "2026-06-26T07:02:08.365Z",
+      "updatedAt": "2026-06-26T07:02:08.365Z"
+    },
+    {
+      "id": "usr_engineer",
+      "email": "engineer@sankhla.com",
+      "password": "password123",
+      "role": "ENGINEER",
+      "companyId": "co_sankhla_01",
+      "firstName": "Amit",
+      "lastName": "Sharma",
+      "phone": "9887700112",
+      "active": true,
+      "createdAt": "2026-06-26T07:02:08.365Z",
+      "updatedAt": "2026-06-26T07:02:08.365Z"
+    }
+  ],
+  "Client": [
+    {
+      "id": "cli_01",
+      "companyId": "co_sankhla_01",
+      "name": "Rajasthan Textures Private Limited",
+      "mobile": "9414123456",
+      "alternateMobile": "0291244556",
+      "email": "info@rajtextures.com",
+      "gstNumber": "08AAACR5566G1Z2",
+      "panNumber": "AACR5566G",
+      "address": "Basni Industrial Area, Phase I",
+      "city": "Jodhpur",
+      "state": "Rajasthan",
+      "pincode": "342005",
+      "googleMapLocation": "https://maps.google.com/?q=26.2389,73.0243",
+      "electricityBillUrl": "",
+      "notes": "Commercial factory site. Sanctioned load 120kW. Roof structure is tin-shed.",
+      "createdAt": "2026-06-26T07:02:08.365Z",
+      "updatedAt": "2026-06-26T07:02:08.365Z"
+    },
+    {
+      "id": "cli_02",
+      "companyId": "co_sankhla_01",
+      "name": "Dr. Sandeep Mehta",
+      "mobile": "9829055443",
+      "alternateMobile": null,
+      "email": "sandeepmehta@gmail.com",
+      "gstNumber": null,
+      "panNumber": "BCZPM4433E",
+      "address": "24, Shastri Nagar",
+      "city": "Jodhpur",
+      "state": "Rajasthan",
+      "pincode": "342003",
+      "googleMapLocation": "https://maps.google.com/?q=26.2644,73.0112",
+      "electricityBillUrl": "",
+      "notes": "Residential villa roof. RCC flat concrete roof. Target: 10kW On-Grid System.",
+      "createdAt": "2026-06-26T07:02:08.365Z",
+      "updatedAt": "2026-06-26T07:02:08.365Z"
+    }
+  ],
+  "Lead": [
+    {
+      "id": "ld_01",
+      "companyId": "co_sankhla_01",
+      "clientId": "cli_01",
+      "source": "Referral",
+      "status": "Negotiating",
+      "followUpDate": "2026-06-28T07:02:08.365Z",
+      "assignedEmployeeId": "emp_01",
+      "priority": "High",
+      "notes": "Client requested additional panel capacity layout",
+      "createdAt": "2026-06-26T07:02:08.365Z",
+      "updatedAt": "2026-06-26T07:02:08.365Z"
+    },
+    {
+      "id": "ld_02",
+      "companyId": "co_sankhla_01",
+      "clientId": "cli_02",
+      "source": "Google Ads",
+      "status": "Site Survey",
+      "followUpDate": "2026-06-29T07:02:08.365Z",
+      "assignedEmployeeId": "emp_01",
+      "priority": "Medium",
+      "notes": "Site survey scheduled for June 28th.",
+      "createdAt": "2026-06-26T07:02:08.365Z",
+      "updatedAt": "2026-06-26T07:02:08.365Z"
+    }
+  ],
+  "Quotation": [
+    {
+      "id": "qt_01",
+      "companyId": "co_sankhla_01",
+      "clientId": "cli_01",
+      "proposalNumber": "QT-2026-001",
+      "capacity": 50,
+      "panelBrand": "Waaree Solar",
+      "panelModel": "Bi-facial Mono PERC",
+      "panelWattage": 540,
+      "panelQuantity": 93,
+      "inverterBrand": "Growatt",
+      "inverterModel": "MAX 50KTL3-LV",
+      "structure": "Hot Dip Galvanized",
+      "cable": "Finolex DC 4 Sqmm",
+      "mc4": "Staubli MC4 EVO2",
+      "acdb": "Sankhla Standard ACDB",
+      "dcdb": "Sankhla Standard DCDB",
+      "installationCharges": 75000,
+      "transportationCharges": 15000,
+      "otherCharges": 20000,
+      "discount": 25000,
+      "gstRate": 18,
+      "materialCost": 1150000,
+      "labourCost": 125000,
+      "profit": 350000,
+      "gstAmount": 292500,
+      "grandTotal": 1917500,
+      "status": "APPROVED",
+      "createdAt": "2026-06-26T07:02:08.365Z",
+      "updatedAt": "2026-06-26T07:02:08.365Z"
+    },
+    {
+      "id": "qt_02",
+      "companyId": "co_sankhla_01",
+      "clientId": "cli_02",
+      "proposalNumber": "QT-2026-002",
+      "capacity": 10,
+      "panelBrand": "Tata Power Solar",
+      "panelModel": "Mono PERC Half Cut",
+      "panelWattage": 500,
+      "panelQuantity": 20,
+      "inverterBrand": "Solis",
+      "inverterModel": "S5-GR3P10K",
+      "structure": "Elevated Aluminum Structure",
+      "cable": "Polycab DC 4 Sqmm",
+      "mc4": "Standard MC4",
+      "acdb": "10kW ACDB Box",
+      "dcdb": "10kW DCDB Box",
+      "installationCharges": 25000,
+      "transportationCharges": 5000,
+      "otherCharges": 5000,
+      "discount": 5000,
+      "gstRate": 18,
+      "materialCost": 280000,
+      "labourCost": 40000,
+      "profit": 80000,
+      "gstAmount": 73800,
+      "grandTotal": 483800,
+      "status": "SENT",
+      "createdAt": "2026-06-26T07:02:08.365Z",
+      "updatedAt": "2026-06-26T07:02:08.365Z"
+    }
+  ],
+  "QuotationItem": [
+    {
+      "id": "qti_01",
+      "quotationId": "qt_01",
+      "description": "Solar Panels 540W",
+      "quantity": 93,
+      "rate": 11000,
+      "amount": 1023000,
+      "createdAt": "2026-06-26T07:02:08.365Z",
+      "updatedAt": "2026-06-26T07:02:08.365Z"
+    }
+  ],
+  "Project": [
+    {
+      "id": "proj_01",
+      "companyId": "co_sankhla_01",
+      "clientId": "cli_01",
+      "quotationId": "qt_01",
+      "status": "INSTALLATION",
+      "engineerId": "emp_02",
+      "technicianId": "emp_03",
+      "installationDate": "2026-07-01T07:02:08.365Z",
+      "completionDate": null,
+      "notes": "Materials successfully ordered. Structure foundations completed.",
+      "createdAt": "2026-06-26T07:02:08.365Z",
+      "updatedAt": "2026-06-26T07:02:08.365Z"
+    }
+  ],
+  "Payment": [
+    {
+      "id": "pay_01",
+      "companyId": "co_sankhla_01",
+      "clientId": "cli_01",
+      "projectId": "proj_01",
+      "amount": 600000,
+      "paymentDate": "2026-06-23T07:02:08.365Z",
+      "paymentMode": "BANK_TRANSFER",
+      "transactionId": "TXN9988776655",
+      "receiptNumber": "REC-2026-001",
+      "notes": "Advance 30% Payment received via RTGS.",
+      "createdAt": "2026-06-26T07:02:08.365Z",
+      "updatedAt": "2026-06-26T07:02:08.365Z"
+    }
+  ],
+  "Expense": [
+    {
+      "id": "exp_01",
+      "companyId": "co_sankhla_01",
+      "category": "Material Purchase",
+      "amount": 450000,
+      "expenseDate": "2026-06-24T07:02:08.365Z",
+      "description": "Purchased 93 Waaree solar modules from distributor.",
+      "referenceUrl": "",
+      "createdAt": "2026-06-26T07:02:08.365Z",
+      "updatedAt": "2026-06-26T07:02:08.365Z"
+    },
+    {
+      "id": "exp_02",
+      "companyId": "co_sankhla_01",
+      "category": "Fuel",
+      "amount": 4200,
+      "expenseDate": "2026-06-26T07:02:08.365Z",
+      "description": "Site survey and structure shipping logistics fuel.",
+      "referenceUrl": "",
+      "createdAt": "2026-06-26T07:02:08.365Z",
+      "updatedAt": "2026-06-26T07:02:08.365Z"
+    }
+  ],
+  "Product": [
+    {
+      "id": "prod_01",
+      "companyId": "co_sankhla_01",
+      "name": "Waaree 540W Mono PERC",
+      "category": "Solar Panels",
+      "brand": "Waaree",
+      "model": "W-540",
+      "wattage": 540,
+      "cost": 10500,
+      "stock": 120,
+      "lowStockAlert": 15,
+      "vendorName": "Waaree Distributors West",
+      "vendorContact": "sales@waareewest.com",
+      "createdAt": "2026-06-26T07:02:08.365Z",
+      "updatedAt": "2026-06-26T07:02:08.365Z"
+    },
+    {
+      "id": "prod_02",
+      "companyId": "co_sankhla_01",
+      "name": "Growatt 50kW On-Grid Inverter",
+      "category": "Inverters",
+      "brand": "Growatt",
+      "model": "MAX 50KTL3",
+      "wattage": null,
+      "cost": 110000,
+      "stock": 3,
+      "lowStockAlert": 2,
+      "vendorName": "Growatt India Pvt Ltd",
+      "vendorContact": "9000111222",
+      "createdAt": "2026-06-26T07:02:08.365Z",
+      "updatedAt": "2026-06-26T07:02:08.365Z"
+    }
+  ],
+  "InventoryLog": [
+    {
+      "id": "inv_log_01",
+      "companyId": "co_sankhla_01",
+      "productId": "prod_01",
+      "type": "STOCK_IN",
+      "quantity": 150,
+      "notes": "Bulk delivery from factory",
+      "date": "2026-06-26T07:02:08.365Z",
+      "createdAt": "2026-06-26T07:02:08.365Z"
+    }
+  ],
+  "PurchaseOrder": [
+    {
+      "id": "po_01",
+      "companyId": "co_sankhla_01",
+      "vendorName": "Havells Cables Jodhpur",
+      "vendorContact": "havellsjdp@cables.com",
+      "orderDate": "2026-06-26T07:02:08.365Z",
+      "status": "PENDING",
+      "totalAmount": 85000,
+      "items": "[{\"item\":\"4Sqmm DC solar cable red\",\"qty\":4,\"unitPrice\":12000},{\"item\":\"4Sqmm DC solar cable black\",\"qty\":4,\"unitPrice\":12000}]",
+      "notes": "Delivery expected within 2 business days.",
+      "createdAt": "2026-06-26T07:02:08.365Z",
+      "updatedAt": "2026-06-26T07:02:08.365Z"
+    }
+  ],
+  "Employee": [
+    {
+      "id": "emp_01",
+      "companyId": "co_sankhla_01",
+      "userId": "usr_sales",
+      "designation": "Sales Executive",
+      "attendanceData": "{\"present\":22,\"absent\":2,\"late\":1}",
+      "salary": 30000,
+      "rating": 4.5,
+      "performanceReview": "Excellent conversion rate on residential leads.",
+      "createdAt": "2026-06-26T07:02:08.365Z",
+      "updatedAt": "2026-06-26T07:02:08.365Z"
+    },
+    {
+      "id": "emp_02",
+      "companyId": "co_sankhla_01",
+      "userId": "usr_engineer",
+      "designation": "Lead Project Engineer",
+      "attendanceData": "{\"present\":24,\"absent\":0,\"late\":0}",
+      "salary": 50000,
+      "rating": 4.8,
+      "performanceReview": "Highly diligent, on-time project execution.",
+      "createdAt": "2026-06-26T07:02:08.365Z",
+      "updatedAt": "2026-06-26T07:02:08.365Z"
+    }
+  ],
+  "Task": [
+    {
+      "id": "tsk_01",
+      "companyId": "co_sankhla_01",
+      "title": "Perform roof load structural verification",
+      "description": "Verify if Rajasthan Textures' tin structure requires purlin reinforcements.",
+      "assignedEmployeeId": "emp_02",
+      "priority": "High",
+      "status": "IN_PROGRESS",
+      "dueDate": "2026-06-27T07:02:08.365Z",
+      "createdAt": "2026-06-26T07:02:08.365Z",
+      "updatedAt": "2026-06-26T07:02:08.365Z"
+    }
+  ],
+  "Document": [
+    {
+      "id": "doc_01",
+      "companyId": "co_sankhla_01",
+      "clientId": "cli_01",
+      "projectId": "proj_01",
+      "type": "Roof Image",
+      "fileUrl": "https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=800&auto=format&fit=crop&q=80",
+      "fileName": "factory_roof_layout.jpg",
+      "uploadedAt": "2026-06-26T07:02:08.365Z"
+    }
+  ],
+  "AMC": [
+    {
+      "id": "amc_01",
+      "companyId": "co_sankhla_01",
+      "clientId": "cli_01",
+      "contractDetails": "50kW Industrial Net Metering Maintenance Contract",
+      "startDate": "2026-06-26T07:02:08.365Z",
+      "endDate": "2027-06-26T07:02:08.365Z",
+      "serviceVisitsScheduled": 4,
+      "complaintsCount": 0,
+      "status": "ACTIVE",
+      "maintenanceHistory": "[{\"visitNo\":1,\"date\":\"2026-06-26T07:02:08.365Z\",\"status\":\"Completed\",\"notes\":\"Module cleaning & earthing check. V-I curve looks perfect.\"}]",
+      "createdAt": "2026-06-26T07:02:08.365Z",
+      "updatedAt": "2026-06-26T07:02:08.365Z"
+    }
+  ],
+  "Setting": [
+    {
+      "id": "set_01",
+      "companyId": "co_sankhla_01",
+      "key": "QUOTATION_TEMPLATE",
+      "value": "premium-corporate",
+      "updatedAt": "2026-06-26T07:02:08.365Z"
+    },
+    {
+      "id": "set_02",
+      "companyId": "co_sankhla_01",
+      "key": "TAX_RATE",
+      "value": "18",
+      "updatedAt": "2026-06-26T07:02:08.365Z"
+    }
+  ],
+  "ActivityLog": [
+    {
+      "id": "act_01",
+      "companyId": "co_sankhla_01",
+      "userId": "usr_owner",
+      "action": "Quotation Generated",
+      "details": "Proposal QT-2026-001 created for Rajasthan Textures Pvt Ltd.",
+      "timestamp": "2026-06-26T07:02:08.365Z"
+    }
+  ],
+  "Notification": [
+    {
+      "id": "not_01",
+      "companyId": "co_sankhla_01",
+      "userId": "usr_owner",
+      "message": "Lead 'Dr. Sandeep Mehta' scheduling request for site survey.",
+      "read": false,
+      "createdAt": "2026-06-26T07:02:08.365Z"
+    }
+  ]
+}

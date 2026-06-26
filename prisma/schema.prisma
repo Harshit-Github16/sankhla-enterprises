@@ -1,0 +1,148 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Company {
+  id                 String      @id @default(auto()) @map("_id") @db.ObjectId
+  name               String
+  logo               String?
+  gstNumber          String?
+  panNumber          String?
+  bankName           String?
+  bankAccountNo      String?
+  bankIfsc           String?
+  bankBranch         String?
+  address            String?
+  city               String?
+  state              String?
+  pincode            String?
+  signatureUrl       String?
+  termsAndConditions String?
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+
+  users              User[]
+  clients            Client[]
+  quotations         Quotation[]
+  payments           Payment[]
+}
+
+model User {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  email        String   @unique
+  password     String
+  role         String   // SUPER_ADMIN, COMPANY_OWNER, SALES_MANAGER, SALES_EXECUTIVE, ACCOUNTANT
+  companyId    String?  @db.ObjectId
+  company      Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  firstName    String
+  lastName     String
+  phone        String?
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Client {
+  id                 String      @id @default(auto()) @map("_id") @db.ObjectId
+  companyId          String      @db.ObjectId
+  company            Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name               String
+  mobile             String
+  alternateMobile    String?
+  address            String?
+  pincode            String?
+  googleMapLocation  String?
+  electricityBillUrl String?
+  notes              String?
+  capacity           Float       @default(0) // target size in kW
+  panelPreference    String?     // Preferred Panel Brand
+  inverterPreference String?     // Preferred Inverter Brand
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+
+  quotations         Quotation[]
+  payments           Payment[]
+}
+
+model Quotation {
+  id                    String          @id @default(auto()) @map("_id") @db.ObjectId
+  companyId             String          @db.ObjectId
+  company               Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  clientId              String          @db.ObjectId
+  client                Client          @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  proposalNumber        String          @unique
+  capacity              Float           // in kW
+  panelBrand            String
+  panelModel            String
+  panelWattage          Int
+  panelQuantity         Int
+  inverterBrand         String
+  inverterModel         String
+  structure             String
+  cable                 String
+  mc4                   String
+  acdb                  String
+  dcdb                  String
+  installationCharges   Float           @default(0)
+  transportationCharges Float           @default(0)
+  otherCharges          Float           @default(0)
+  discount              Float           @default(0)
+  gstRate               Float           @default(18) // Percentage
+  materialCost          Float
+  labourCost            Float
+  profit                Float
+  gstAmount             Float
+  grandTotal            Float
+  status                String          // DRAFT, SENT, APPROVED, REJECTED
+  dueDate               DateTime?
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+
+  items                 QuotationItem[]
+}
+
+model QuotationItem {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  quotationId String    @db.ObjectId
+  quotation   Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  description String
+  quantity    Int
+  rate        Float
+  amount      Float
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Payment {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  companyId     String   @db.ObjectId
+  company       Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  clientId      String   @db.ObjectId
+  client        Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  amount        Float
+  paymentDate   DateTime @default(now())
+  paymentMode   String   // CASH, UPI, CHEQUE, BANK_TRANSFER
+  transactionId String?
+  receiptNumber String   @unique
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model OverdueRecord {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  companyId      String    @db.ObjectId
+  proposalNumber String
+  clientName     String
+  dueDate        DateTime?
+  grandTotal     Float
+  clientPayments Float     @default(0)
+  unpaidBalance  Float
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
