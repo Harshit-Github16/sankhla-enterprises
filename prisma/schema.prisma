@@ -60,6 +60,7 @@ model Client {
   electricityBillUrl String?
   notes              String?
   capacity           Float       @default(0) // target size in kW
+  projectPrice       Float?      // Fixed project price for this client
   panelPreference    String?     // Preferred Panel Brand
   inverterPreference String?     // Preferred Inverter Brand
   createdAt          DateTime    @default(now())

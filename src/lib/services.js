@@ -23,11 +23,14 @@ export async function getClients(companyId) {
 }
 
 export async function createClient(companyId, clientData) {
+  // Extract projectPrice safely to store dynamically or handle separately to bypass Prisma Client cache issues
+  const { projectPrice, ...clientFields } = clientData;
   return await prisma.client.create({
     data: {
-      ...clientData,
+      ...clientFields,
       companyId,
-      capacity: parseFloat(clientData.capacity || 0)
+      capacity: parseFloat(clientFields.capacity || 0),
+      projectPrice: projectPrice ? parseFloat(projectPrice) : null
     }
   });
 }
@@ -62,9 +65,9 @@ export async function createQuotation(companyId, quoteData) {
   const panelQuantity = parseInt(quoteData.panelQuantity || 10);
   const panelWattage = parseInt(quoteData.panelWattage || 500);
   
-  const materialCost = parseFloat(quoteData.materialCost || (panelQuantity * 11000 + 150000)); 
-  const labourCost = parseFloat(quoteData.labourCost || (capacity * 8000));
-  const profit = parseFloat(quoteData.profit || (materialCost * 0.15));
+  const materialCost = quoteData.materialCost !== undefined && quoteData.materialCost !== '' ? parseFloat(quoteData.materialCost) : (panelQuantity * 11000 + 150000); 
+  const labourCost = quoteData.labourCost !== undefined && quoteData.labourCost !== '' ? parseFloat(quoteData.labourCost) : (capacity * 8000);
+  const profit = quoteData.profit !== undefined && quoteData.profit !== '' ? parseFloat(quoteData.profit) : (materialCost * 0.15);
   
   const baseTotal = materialCost + labourCost + profit + 
     parseFloat(quoteData.installationCharges || 0) + 
@@ -115,6 +118,12 @@ export async function updateQuotation(id, quoteData) {
   return await prisma.quotation.update({
     where: { id },
     data: quoteData
+  });
+}
+
+export async function deleteQuotation(id) {
+  return await prisma.quotation.delete({
+    where: { id }
   });
 }
 

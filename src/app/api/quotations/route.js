@@ -26,3 +26,19 @@ export async function PUT(request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
+export async function DELETE(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    if (!id) {
+      return NextResponse.json({ error: "Missing Quotation ID" }, { status: 400 });
+    }
+    const deletedQuote = await dbServices.deleteQuotation(id);
+    return NextResponse.json(deletedQuote);
+  } catch (error) {
+    console.error("API quotations DELETE error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+

@@ -1,14 +1,77 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   Users, FileText, IndianRupee, Plus, Download, Search, Landmark, Bell,
-  Trash2, Edit, Copy, ChevronRight, CheckCircle, Clock, AlertTriangle,
+  Trash2, Edit, Copy, ChevronRight, ChevronDown, CheckCircle, Clock, AlertTriangle,
   X, FileUp, CheckSquare, Wrench, UserCheck, ShieldAlert, Menu, Calendar,
   LayoutDashboard, TrendingUp, PieChart
 } from 'lucide-react';
 import { useStore } from '@/lib/store';
 
+const CustomSelect = ({ value, onChange, options, placeholder, required }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const selectedOption = options.find(opt => opt.value === value);
+
+  return (
+    <div className="relative w-full" ref={containerRef}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs text-left flex justify-between items-center transition-all focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent"
+      >
+        <span className={!selectedOption ? "text-gray-500" : "text-gray-900 font-semibold truncate pr-2"}>
+          {selectedOption ? selectedOption.label : placeholder}
+        </span>
+        <ChevronDown className={`h-4 w-4 text-gray-400 flex-shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180 text-[#1E3A8A]' : ''}`} />
+      </button>
+
+      {isOpen && (
+        <div className="absolute z-50 w-full mt-1.5 bg-white border border-gray-100 rounded-xl shadow-xl max-h-60 overflow-y-auto premium-shadow">
+          <ul className="py-1">
+            <li
+              className="px-3 py-2 text-xs text-gray-500 hover:bg-gray-50 cursor-pointer border-b border-gray-50"
+              onClick={() => { onChange(''); setIsOpen(false); }}
+            >
+              {placeholder}
+            </li>
+            {options.map((opt) => (
+              <li
+                key={opt.value}
+                onClick={() => { onChange(opt.value); setIsOpen(false); }}
+                className={`px-3 py-2 text-xs cursor-pointer hover:bg-blue-50 transition-colors ${value === opt.value ? 'bg-blue-50/50 font-bold text-[#1E3A8A]' : 'text-gray-700 font-medium'}`}
+              >
+                {opt.label}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {required && (
+        <input 
+          type="text" 
+          value={value} 
+          onChange={() => {}} 
+          required 
+          className="absolute opacity-0 w-0 h-0 pointer-events-none" 
+          style={{ top: '50%', left: '50%' }}
+        />
+      )}
+    </div>
+  );
+};
 export default function SolarERPApp({
   initialCompanies,
   initialClients,
@@ -35,11 +98,23 @@ export default function SolarERPApp({
   React.useEffect(() => {
     const saved = localStorage.getItem('sankhla_erp_logged_in') === 'true';
     setIsLoggedIn(saved);
+    
+    const savedTab = localStorage.getItem('sankhla_erp_active_tab');
+    if (savedTab) {
+      setActiveTab(savedTab);
+    }
+    
     setIsHydrated(true);
     if (initialCompanies && initialCompanies.length > 0) {
       setCurrentCompany(initialCompanies[0]);
     }
   }, [initialCompanies, setCurrentCompany]);
+
+  React.useEffect(() => {
+    if (isHydrated) {
+      localStorage.setItem('sankhla_erp_active_tab', activeTab);
+    }
+  }, [activeTab, isHydrated]);
 
   // Sidebar state for mobile/tablets sliding overlay
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -63,7 +138,7 @@ export default function SolarERPApp({
   const [previewQuote, setPreviewQuote] = useState(null);
 
   // --- FORM FIELDS ---
-  const [clientForm, setClientForm] = useState({ name: '', mobile: '', address: '', capacity: 10, panelPreference: 'Waaree Solar', inverterPreference: 'Growatt', notes: '' });
+  const [clientForm, setClientForm] = useState({ name: '', mobile: '', address: '', capacity: 10, projectPrice: '', panelPreference: 'Waaree Solar', inverterPreference: 'Growatt', notes: '' });
 
   // Quote form with manual client switch options
   const [isManualClient, setIsManualClient] = useState(false);
@@ -75,24 +150,16 @@ export default function SolarERPApp({
     clientId: '',
     capacity: 10,
     panelBrand: 'Waaree Solar',
-    panelModel: 'Mono PERC Half Cut',
-    panelWattage: 540,
-    panelQuantity: 20,
     inverterBrand: 'Growatt',
-    inverterModel: 'MAX 15KTL3',
     structure: 'Standard Galvanized Structure',
     cable: 'Finolex 4 Sqmm DC',
     mc4: 'Standard MC4',
-    acdb: '10kW ACDB Box',
-    dcdb: '10kW DCDB Box',
     installationCharges: 25000,
     transportationCharges: 5000,
     otherCharges: 5000,
     discount: 5000,
     gstRate: 18,
-    materialCost: 280000,
-    labourCost: 35000,
-    profit: 70000,
+    projectCost: 350000,
     dueDate: ''
   });
 
@@ -236,7 +303,7 @@ export default function SolarERPApp({
 
       setClients(prev => [data, ...prev]);
       setIsClientModalOpen(false);
-      setClientForm({ name: '', mobile: '', address: '', capacity: 10, panelPreference: 'Waaree Solar', inverterPreference: 'Growatt', notes: '' });
+      setClientForm({ name: '', mobile: '', address: '', capacity: 10, projectPrice: '', panelPreference: 'Waaree Solar', inverterPreference: 'Growatt', notes: '' });
       addToast("Client profile successfully created.");
     } catch (err) {
       console.error(err);
@@ -296,7 +363,15 @@ export default function SolarERPApp({
           companyId: currentCompany.id,
           quoteData: {
             ...quoteForm,
-            clientId: resolvedClientId
+            clientId: resolvedClientId,
+            materialCost: quoteForm.projectCost,
+            labourCost: 0,
+            profit: 0,
+            panelWattage: 540,
+            panelQuantity: Math.ceil((parseFloat(quoteForm.capacity || 0) * 1000) / 540),
+            inverterModel: `${quoteForm.capacity}kW Inverter`,
+            acdb: `${quoteForm.capacity}kW ACDB Box`,
+            dcdb: `${quoteForm.capacity}kW DCDB Box`
           }
         })
       });
@@ -523,6 +598,48 @@ export default function SolarERPApp({
     }
   };
 
+  // Delete payment record
+  const handleDeletePayment = async (id) => {
+    try {
+      const response = await fetch(`/api/payments?id=${id}`, { method: 'DELETE' });
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
+      setPayments(prev => prev.filter(rec => rec.id !== id));
+      addToast('Payment record removed.');
+    } catch (err) {
+      console.error(err);
+      addToast('Failed to delete payment: ' + err.message, 'error');
+    }
+  };
+
+  // Delete client record
+  const handleDeleteClient = async (id) => {
+    try {
+      const response = await fetch(`/api/clients?id=${id}`, { method: 'DELETE' });
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
+      setClients(prev => prev.filter(rec => rec.id !== id));
+      addToast('Client record removed.');
+    } catch (err) {
+      console.error(err);
+      addToast('Failed to delete client: ' + err.message, 'error');
+    }
+  };
+
+  // Delete quotation record
+  const handleDeleteQuotation = async (id) => {
+    try {
+      const response = await fetch(`/api/quotations?id=${id}`, { method: 'DELETE' });
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
+      setQuotations(prev => prev.filter(rec => rec.id !== id));
+      addToast('Quotation record removed.');
+    } catch (err) {
+      console.error(err);
+      addToast('Failed to delete quotation: ' + err.message, 'error');
+    }
+  };
+
   const handleLogin = (e) => {
     e.preventDefault();
     if (loginUsername === 'Jayesh1999' && loginPassword === '856084') {
@@ -558,7 +675,7 @@ export default function SolarERPApp({
       <div className="min-h-screen bg-[#FAFBFC] flex items-center justify-center p-6 relative overflow-hidden font-sans">
         {/* Subtle Check Grid Background Pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:32px_32px] opacity-[0.6] pointer-events-none"></div>
-        
+
         <div className="absolute top-0 -left-4 w-96 h-96 bg-blue-50/50 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 -right-4 w-96 h-96 bg-indigo-50/50 rounded-full blur-3xl"></div>
 
@@ -756,13 +873,33 @@ export default function SolarERPApp({
               {activeTab === 'quotations' && (
                 <button onClick={() => setIsQuoteModalOpen(true)} className="btn-premium flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-[#1E3A8A] rounded-xl hover:bg-blue-900 shadow-sm transition">
                   <Plus className="h-3.5 w-3.5" />
-                  <span>Draft Proposal</span>
+                  <span>Create Quotation</span>
                 </button>
               )}
               {activeTab === 'payments' && (
                 <button onClick={() => setIsPaymentModalOpen(true)} className="btn-premium flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-[#1E3A8A] rounded-xl hover:bg-blue-900 shadow-sm transition">
                   <Plus className="h-3.5 w-3.5" />
                   <span>Record Payment</span>
+                </button>
+              )}
+              {activeTab === 'overdue' && (
+                <button 
+                  onClick={() => {
+                    setEditingOverdueRecord(null);
+                    setOverdueForm({
+                      proposalNumber: `QT-MAN-${Math.floor(1000 + Math.random() * 9000)}`,
+                      clientName: '',
+                      dueDate: '',
+                      grandTotal: '',
+                      clientPayments: '0',
+                      unpaidBalance: ''
+                    });
+                    setIsOverdueModalOpen(true);
+                  }}
+                  className="btn-premium flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-[#1E3A8A] rounded-xl hover:bg-blue-900 shadow-sm transition"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  <span>Add Overdue</span>
                 </button>
               )}
             </div>
@@ -1120,7 +1257,7 @@ export default function SolarERPApp({
           {/* CLIENT MODULE */}
           {activeTab === 'clients' && (
             <div className="space-y-6">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
                 <div>
                   <h1 className="text-xl font-bold text-gray-900">Clients</h1>
                   <p className="text-xs text-gray-500">Manage client profiles, contacts, and registration parameters.</p>
@@ -1128,7 +1265,7 @@ export default function SolarERPApp({
                 {clients.length > 0 && (
                   <button
                     onClick={() => handleExportCSV(clients, 'clients_list')}
-                    className="px-3 py-1.5 border border-gray-200 rounded-xl text-xs bg-white text-gray-600 hover:bg-gray-50 flex items-center gap-1"
+                    className="px-3 py-1.5 border border-gray-200 rounded-xl text-xs bg-white text-gray-600 hover:bg-gray-50 flex items-center gap-1 whitespace-nowrap flex-shrink-0"
                   >
                     <Download className="h-3 w-3" /> Export CSV
                   </button>
@@ -1142,36 +1279,51 @@ export default function SolarERPApp({
                   <p className="text-[11px] text-gray-400 mt-1 max-w-xs mx-auto">Get started by creating your first client account using the button above.</p>
                 </div>
               ) : (
-                <div className="premium-card bg-white overflow-hidden">
-                  <table className="w-full text-left border-collapse">
+                <div className="premium-card bg-white overflow-x-auto">
+                  <table className="w-full text-left border-collapse border border-gray-200 whitespace-nowrap">
                     <thead>
                       <tr className="bg-gray-50 border-b border-gray-100 text-xs font-bold text-gray-500 uppercase">
-                        <th className="px-6 py-4">Client Name</th>
-                        <th className="px-6 py-4">Contact Info</th>
-                        <th className="px-6 py-4">Project Size</th>
-                        <th className="px-6 py-4">Address</th>
-                        <th className="px-6 py-4 text-right">Actions</th>
+                        <th className="px-6 py-4 border border-gray-200">Client Name</th>
+                        <th className="px-6 py-4 border border-gray-200">Contact Info</th>
+                        <th className="px-6 py-4 border border-gray-200">Project Size</th>
+                        <th className="px-6 py-4 border border-gray-200">Project Price (Fixed)</th>
+                        <th className="px-6 py-4 border border-gray-200">Address</th>
+                        <th className="px-6 py-4 border border-gray-200 text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 text-xs">
                       {filteredClients.map(c => (
                         <tr key={c.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 font-semibold text-gray-900">{c.name}</td>
-                          <td className="px-6 py-4 text-gray-600">
+                          <td className="px-6 py-4 border border-gray-200 font-semibold text-gray-900">{c.name}</td>
+                          <td className="px-6 py-4 border border-gray-200 text-gray-600">
                             <div>{c.mobile}</div>
                           </td>
-                          <td className="px-6 py-4 text-gray-600 font-bold text-blue-900">{c.capacity || 0} kW</td>
-                          <td className="px-6 py-4 text-gray-600">{c.address || ''}</td>
-                          <td className="px-6 py-4 text-right">
-                            <button
-                              onClick={() => {
-                                setSelectedClient(c);
-                                setIsClientDetailOpen(true);
-                              }}
-                              className="text-[#1E3A8A] font-bold hover:underline"
-                            >
-                              Open Ledger File
-                            </button>
+                          <td className="px-6 py-4 border border-gray-200 font-bold text-blue-900">{c.capacity || 0} kW</td>
+                          <td className="px-6 py-4 border border-gray-200 text-gray-700 font-semibold">{c.projectPrice ? `₹${parseFloat(c.projectPrice).toLocaleString('en-IN')}` : '-'}</td>
+                          <td className="px-6 py-4 border border-gray-200 text-gray-600">{c.address || ''}</td>
+                          <td className="px-6 py-4 border border-gray-200 text-right">
+                            <div className="flex justify-end items-center gap-3">
+                              <button
+                                onClick={() => {
+                                  setSelectedClient(c);
+                                  setIsClientDetailOpen(true);
+                                }}
+                                className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 text-xs font-semibold transition-colors border border-blue-100 shadow-sm"
+                              >
+                                Open Ledger File
+                              </button>
+                              <button
+                                onClick={() => {
+                                  if (confirm("Are you sure you want to delete this client?")) {
+                                    handleDeleteClient(c.id);
+                                  }
+                                }}
+                                className="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors flex items-center justify-center border border-red-100 shadow-sm"
+                                title="Delete Client"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -1197,29 +1349,52 @@ export default function SolarERPApp({
                   <p className="text-[11px] text-gray-400 mt-1 max-w-xs mx-auto">Create solar system proposals for registered clients using the Draft Proposal button.</p>
                 </div>
               ) : (
-                <div className="premium-card bg-white overflow-hidden">
-                  <table className="w-full text-left border-collapse">
+                <div className="premium-card bg-white overflow-x-auto">
+                  <table className="w-full text-left border-collapse border border-gray-200 whitespace-nowrap">
                     <thead>
                       <tr className="bg-gray-50 border-b border-gray-100 text-xs font-bold text-gray-500 uppercase">
-                        <th className="px-6 py-4">Proposal No</th>
-                        <th className="px-6 py-4">Client Name</th>
-                        <th className="px-6 py-4">Capacity</th>
-                        <th className="px-6 py-4">Due Date</th>
-                        <th className="px-6 py-4">Grand Total</th>
-                        <th className="px-6 py-4 text-right">Actions</th>
+                        <th className="px-6 py-4 border border-gray-200">Proposal No</th>
+                        <th className="px-6 py-4 border border-gray-200">Client Name</th>
+                        <th className="px-6 py-4 border border-gray-200">Capacity</th>
+                        <th className="px-6 py-4 border border-gray-200">Due Date</th>
+                        <th className="px-6 py-4 border border-gray-200">Grand Total</th>
+                        <th className="px-6 py-4 border border-gray-200 text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 text-xs">
                       {filteredQuotations.map(q => (
                         <tr key={q.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 font-bold text-gray-900">{q.proposalNumber}</td>
-                          <td className="px-6 py-4 font-semibold text-gray-700">{q.client ? q.client.name : 'Unknown Client'}</td>
-                          <td className="px-6 py-4 text-gray-600">{q.capacity} kW</td>
-                          <td className="px-6 py-4 text-gray-600">{q.dueDate ? new Date(q.dueDate).toLocaleDateString() : '-'}</td>
-                          <td className="px-6 py-4 font-bold text-[#1E3A8A]">₹{q.grandTotal.toLocaleString('en-IN')}</td>
-                          <td className="px-6 py-4 text-right space-x-3">
-                            <button onClick={() => setPreviewQuote(q)} className="text-blue-900 font-bold hover:underline">Preview proposal</button>
-                            <button onClick={() => handleDuplicateQuotation(q)} className="text-gray-400 hover:text-gray-600 inline-block align-middle"><Copy className="h-3.5 w-3.5" /></button>
+                          <td className="px-6 py-4 border border-gray-200 font-bold text-gray-900">{q.proposalNumber}</td>
+                          <td className="px-6 py-4 border border-gray-200 font-semibold text-gray-700">{q.client ? q.client.name : 'Unknown Client'}</td>
+                          <td className="px-6 py-4 border border-gray-200 text-gray-600">{q.capacity} kW</td>
+                          <td className="px-6 py-4 border border-gray-200 text-gray-600">{q.dueDate ? new Date(q.dueDate).toLocaleDateString() : '-'}</td>
+                          <td className="px-6 py-4 border border-gray-200 font-bold text-[#1E3A8A]">₹{q.grandTotal.toLocaleString('en-IN')}</td>
+                          <td className="px-6 py-4 border border-gray-200 text-right">
+                            <div className="flex justify-end items-center gap-3">
+                              <button onClick={() => setPreviewQuote(q)} className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 text-xs font-semibold transition-colors border border-blue-100 shadow-sm">Preview proposal</button>
+                              <button
+                                onClick={() => {
+                                  setPreviewQuote(q);
+                                  setTimeout(() => window.print(), 500);
+                                }}
+                                className="p-1.5 bg-green-50 hover:bg-green-100 rounded-lg text-green-600 transition-colors border border-green-100 shadow-sm flex items-center justify-center"
+                                title="Download / Print PDF"
+                              >
+                                <Download className="h-4 w-4" />
+                              </button>
+                              <button onClick={() => handleDuplicateQuotation(q)} className="p-1.5 bg-gray-50 hover:bg-gray-100 rounded-lg text-gray-600 transition-colors border border-gray-100 shadow-sm flex items-center justify-center" title="Duplicate"><Copy className="h-4 w-4" /></button>
+                              <button
+                                onClick={() => {
+                                  if (confirm("Are you sure you want to delete this quotation?")) {
+                                    handleDeleteQuotation(q.id);
+                                  }
+                                }}
+                                className="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors border border-red-100 shadow-sm flex items-center justify-center"
+                                title="Delete Quotation"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -1588,25 +1763,39 @@ export default function SolarERPApp({
                   <p className="text-[11px] text-gray-400 mt-1 max-w-xs mx-auto">Track advance collections and issue billing receipts using the Record Payment button.</p>
                 </div>
               ) : (
-                <div className="premium-card bg-white overflow-hidden">
-                  <table className="w-full text-left border-collapse">
+                <div className="premium-card bg-white overflow-x-auto">
+                  <table className="w-full text-left border-collapse border border-gray-200 whitespace-nowrap">
                     <thead>
                       <tr className="bg-gray-50 border-b border-gray-100 text-xs font-bold text-gray-500 uppercase">
-                        <th className="px-6 py-4">Receipt No</th>
-                        <th className="px-6 py-4">Client Name</th>
-                        <th className="px-6 py-4">Payment Mode</th>
-                        <th className="px-6 py-4">Receipt Date</th>
-                        <th className="px-6 py-4 text-right">Amount</th>
+                        <th className="px-6 py-4 border border-gray-200">Receipt No</th>
+                        <th className="px-6 py-4 border border-gray-200">Client Name</th>
+                        <th className="px-6 py-4 border border-gray-200">Payment Mode</th>
+                        <th className="px-6 py-4 border border-gray-200">Receipt Date</th>
+                        <th className="px-6 py-4 border border-gray-200 text-right">Amount</th>
+                        <th className="px-6 py-4 border border-gray-200 text-center">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 text-xs">
                       {filteredPayments.map(p => (
                         <tr key={p.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 font-bold text-gray-900">{p.receiptNumber}</td>
-                          <td className="px-6 py-4 font-semibold text-gray-700">{p.client ? p.client.name : 'Unknown Client'}</td>
-                          <td className="px-6 py-4 text-gray-600">{p.paymentMode}</td>
-                          <td className="px-6 py-4 text-gray-500">{new Date(p.paymentDate).toLocaleDateString()}</td>
-                          <td className="px-6 py-4 text-right font-bold text-emerald-600">₹{p.amount.toLocaleString('en-IN')}</td>
+                          <td className="px-6 py-4 border border-gray-200 font-bold text-gray-900">{p.receiptNumber}</td>
+                          <td className="px-6 py-4 border border-gray-200 font-semibold text-gray-700">{p.client ? p.client.name : 'Unknown Client'}</td>
+                          <td className="px-6 py-4 border border-gray-200 text-gray-600">{p.paymentMode}</td>
+                          <td className="px-6 py-4 border border-gray-200 text-gray-500">{new Date(p.paymentDate).toLocaleDateString()}</td>
+                          <td className="px-6 py-4 border border-gray-200 text-right font-bold text-emerald-600">₹{p.amount.toLocaleString('en-IN')}</td>
+                          <td className="px-6 py-4 border border-gray-200 text-center">
+                            <button
+                              onClick={() => {
+                                if (confirm("Are you sure you want to delete this payment record?")) {
+                                  handleDeletePayment(p.id);
+                                }
+                              }}
+                              className="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors border border-red-100 shadow-sm flex items-center justify-center mx-auto"
+                              title="Delete Payment"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -1619,29 +1808,12 @@ export default function SolarERPApp({
           {/* OVERDUE PAYMENTS MODULE */}
           {activeTab === 'overdue' && (
             <div className="space-y-6">
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
                 <div>
-                  <h1 className="text-xl font-bold text-red-600">Overdue Payments</h1>
+                  <h1 className="text-xl font-bold text-gray-900">Overdue Payments</h1>
                   <p className="text-xs text-gray-500">Track approved proposals whose payment deadlines have expired and contain outstanding balances.</p>
                 </div>
-                <button
-                  onClick={() => {
-                    setEditingOverdueRecord(null);
-                    setOverdueForm({
-                      proposalNumber: `QT-MAN-${Math.floor(1000 + Math.random() * 9000)}`,
-                      clientName: '',
-                      dueDate: '',
-                      grandTotal: '',
-                      clientPayments: '0',
-                      unpaidBalance: ''
-                    });
-                    setIsOverdueModalOpen(true);
-                  }}
-                  className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-xl text-xs transition duration-200"
-                >
-                  <Plus className="h-4 w-4" />
-                  Add Overdue Record
-                </button>
+
               </div>
 
               {combinedOverduePayments.length === 0 ? (
@@ -1651,31 +1823,31 @@ export default function SolarERPApp({
                   <p className="text-[11px] text-gray-400 mt-1 max-w-xs mx-auto">All client invoices are fully paid or their active payment deadlines are in the future.</p>
                 </div>
               ) : (
-                <div className="premium-card bg-white overflow-hidden">
-                  <table className="w-full text-left border-collapse">
+                <div className="premium-card bg-white overflow-x-auto">
+                  <table className="w-full text-left border-collapse border border-gray-200 whitespace-nowrap">
                     <thead>
                       <tr className="bg-gray-50 border-b border-gray-100 text-xs font-bold text-gray-500 uppercase">
-                        <th className="px-6 py-4">Proposal No</th>
-                        <th className="px-6 py-4">Client Name</th>
-                        <th className="px-6 py-4 text-center">Due Date</th>
-                        <th className="px-6 py-4 text-right">Total Amount</th>
-                        <th className="px-6 py-4 text-right">Amount Paid</th>
-                        <th className="px-6 py-4 text-right text-red-600">Overdue Balance</th>
-                        <th className="px-6 py-4 text-right">Action</th>
+                        <th className="px-6 py-4 border border-gray-200">Proposal No</th>
+                        <th className="px-6 py-4 border border-gray-200">Client Name</th>
+                        <th className="px-6 py-4 border border-gray-200 text-center">Due Date</th>
+                        <th className="px-6 py-4 border border-gray-200 text-right">Total Amount</th>
+                        <th className="px-6 py-4 border border-gray-200 text-right">Amount Paid</th>
+                        <th className="px-6 py-4 border border-gray-200 text-right text-gray-500">Overdue Balance</th>
+                        <th className="px-6 py-4 border border-gray-200 text-right">Action</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 text-xs">
                       {combinedOverduePayments.map(op => (
-                        <tr key={op.id} className="hover:bg-red-50/20">
-                          <td className="px-6 py-4 font-bold text-gray-900">{op.proposalNumber}</td>
-                          <td className="px-6 py-4 font-semibold text-gray-700">{op.client ? op.client.name : (op.clientName || 'Unknown Client')}</td>
-                          <td className="px-6 py-4 text-center text-red-700 font-medium">
+                        <tr key={op.id} className="hover:bg-orange-50/30 border-b border-gray-50">
+                          <td className="px-6 py-4 border border-gray-200 font-bold text-gray-900">{op.proposalNumber}</td>
+                          <td className="px-6 py-4 border border-gray-200 font-semibold text-gray-700">{op.client ? op.client.name : (op.clientName || 'Unknown Client')}</td>
+                          <td className="px-6 py-4 border border-gray-200 text-center text-orange-600 font-semibold">
                             {op.dueDate ? new Date(op.dueDate).toLocaleDateString() : '-'}
                           </td>
-                          <td className="px-6 py-4 text-right font-medium">₹{op.grandTotal.toLocaleString('en-IN')}</td>
-                          <td className="px-6 py-4 text-right text-emerald-600">₹{op.clientPayments.toLocaleString('en-IN')}</td>
-                          <td className="px-6 py-4 text-right font-bold text-red-600">₹{op.unpaidBalance.toLocaleString('en-IN')}</td>
-                          <td className="px-6 py-4 text-right">
+                          <td className="px-6 py-4 border border-gray-200 text-right font-medium">₹{op.grandTotal.toLocaleString('en-IN')}</td>
+                          <td className="px-6 py-4 border border-gray-200 text-right text-emerald-600">₹{op.clientPayments.toLocaleString('en-IN')}</td>
+                          <td className="px-6 py-4 border border-gray-200 text-right font-bold text-orange-600">₹{op.unpaidBalance.toLocaleString('en-IN')}</td>
+                          <td className="px-6 py-4 border border-gray-200 text-right">
                             <div className="flex justify-end items-center gap-2">
                               {!op.isManual && (
                                 <button
@@ -1687,40 +1859,42 @@ export default function SolarERPApp({
                                     }));
                                     setIsPaymentModalOpen(true);
                                   }}
-                                  className="px-2.5 py-1 text-[10px] font-bold text-white bg-red-600 hover:bg-red-700 rounded-lg"
+                                  className="px-3 py-1.5 bg-orange-50 text-orange-700 rounded-lg hover:bg-orange-100 text-xs font-semibold transition-colors border border-orange-100 shadow-sm"
                                 >
                                   Collect Balance
                                 </button>
                               )}
                               {op.isManual && (
-                                <>
-                                  <button
-                                    onClick={() => {
-                                      setEditingOverdueRecord(op);
-                                      setOverdueForm({
-                                        proposalNumber: op.proposalNumber,
-                                        clientName: op.clientName,
-                                        dueDate: op.dueDate ? op.dueDate.split('T')[0] : '',
-                                        grandTotal: op.grandTotal.toString(),
-                                        clientPayments: op.clientPayments.toString(),
-                                        unpaidBalance: op.unpaidBalance.toString()
-                                      });
-                                      setIsOverdueModalOpen(true);
-                                    }}
-                                    title="Edit Manual Overdue"
-                                    className="p-1 hover:bg-gray-100 rounded text-gray-600"
-                                  >
-                                    <Edit className="h-3.5 w-3.5" />
-                                  </button>
-                                  <button
-                                    onClick={() => handleDeleteOverdueRecord(op.id)}
-                                    title="Delete Manual Overdue"
-                                    className="p-1 hover:bg-red-50 rounded text-red-600"
-                                  >
-                                    <Trash2 className="h-3.5 w-3.5" />
-                                  </button>
-                                </>
+                                <button
+                                  onClick={() => {
+                                    setEditingOverdueRecord(op);
+                                    setOverdueForm({
+                                      proposalNumber: op.proposalNumber,
+                                      clientName: op.clientName,
+                                      dueDate: op.dueDate ? op.dueDate.split('T')[0] : '',
+                                      grandTotal: op.grandTotal.toString(),
+                                      clientPayments: op.clientPayments.toString(),
+                                      unpaidBalance: op.unpaidBalance.toString()
+                                    });
+                                    setIsOverdueModalOpen(true);
+                                  }}
+                                  title="Edit Manual Overdue"
+                                  className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-600 transition-colors"
+                                >
+                                  <Edit className="h-3.5 w-3.5" />
+                                </button>
                               )}
+                              <button
+                                onClick={() => {
+                                  if (confirm("Are you sure you want to delete this overdue record?")) {
+                                    handleDeleteOverdueRecord(op.id);
+                                  }
+                                }}
+                                title="Delete Overdue Record"
+                                className="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors border border-red-100 shadow-sm flex items-center justify-center"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
                             </div>
                           </td>
                         </tr>
@@ -1737,9 +1911,9 @@ export default function SolarERPApp({
 
       {/* CLIENT DIALOG MODAL */}
       {isClientModalOpen && (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-6">
-          <form onSubmit={handleCreateClient} className="bg-white rounded-2xl w-full max-w-md p-6 space-y-4 premium-shadow text-xs">
-            <h3 className="text-sm font-bold text-gray-900">Add New CRM Client</h3>
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-start justify-center z-50 p-4 sm:p-6 overflow-y-auto">
+          <form onSubmit={handleCreateClient} className="bg-white rounded-2xl w-full max-w-md p-6 space-y-4 premium-shadow text-xs my-8">
+            <h3 className="text-sm font-bold text-gray-900">Add Client</h3>
 
             <div className="space-y-1">
               <label className="font-semibold text-gray-600">Client / Company Name *</label>
@@ -1776,6 +1950,17 @@ export default function SolarERPApp({
             </div>
 
             <div className="space-y-1">
+              <label className="font-semibold text-gray-600">Project Deal Price (Fixed Deal Amount)</label>
+              <input
+                type="number"
+                placeholder="e.g. 450000"
+                value={clientForm.projectPrice}
+                onChange={(e) => setClientForm({ ...clientForm, projectPrice: e.target.value })}
+                className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs"
+              />
+            </div>
+
+            <div className="space-y-1">
               <label className="font-semibold text-gray-600">Site Address *</label>
               <input
                 type="text"
@@ -1788,7 +1973,7 @@ export default function SolarERPApp({
 
 
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
                 <label className="font-semibold text-gray-600">Preferred Panels Brand</label>
                 <input
@@ -1821,9 +2006,9 @@ export default function SolarERPApp({
 
       {/* QUOTATION DIALOG MODAL */}
       {isQuoteModalOpen && (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-6 overflow-y-auto">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-start justify-center z-50 p-4 sm:p-6 overflow-y-auto">
           <form onSubmit={handleCreateQuotation} className="bg-white rounded-2xl w-full max-w-2xl p-6 space-y-4 premium-shadow text-xs my-8">
-            <h3 className="text-sm font-bold text-gray-900">Design Solar Proposal</h3>
+            <h3 className="text-sm font-bold text-gray-900">Create Quotations</h3>
 
             {/* Toggle between Select and Manual client */}
             <div className="bg-gray-50 p-3 rounded-xl border border-gray-200/50 flex items-center justify-between mb-2">
@@ -1836,7 +2021,7 @@ export default function SolarERPApp({
                     onChange={() => setIsManualClient(false)}
                     className="text-[#1E3A8A] focus:ring-[#1E3A8A]"
                   />
-                  Choose From CRM
+                  Choose From Clients
                 </label>
                 <label className="flex items-center gap-1.5 cursor-pointer font-medium text-gray-800">
                   <input
@@ -1850,26 +2035,22 @@ export default function SolarERPApp({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Select Client */}
               {!isManualClient ? (
                 <div className="space-y-1">
                   <label className="font-semibold text-gray-600">Select CRM Client *</label>
-                  <select
+                  <CustomSelect
                     required={!isManualClient}
                     value={quoteForm.clientId}
-                    onChange={(e) => setQuoteForm({ ...quoteForm, clientId: e.target.value })}
-                    className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs"
-                  >
-                    <option value="">-- Choose Client --</option>
-                    {clients.map(c => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
-                    ))}
-                  </select>
+                    onChange={(val) => setQuoteForm({ ...quoteForm, clientId: val })}
+                    options={clients.map(c => ({ value: c.id, label: c.name }))}
+                    placeholder="-- Choose Client --"
+                  />
                 </div>
               ) : (
                 /* Manual Client Inputs */
-                <div className="col-span-2 grid grid-cols-3 gap-3 bg-blue-50/20 p-3 rounded-xl border border-blue-100">
+                <div className="col-span-1 sm:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-3 bg-blue-50/20 p-3 rounded-xl border border-blue-100">
                   <div className="space-y-1">
                     <label className="font-semibold text-gray-600">Client Name *</label>
                     <input
@@ -1917,7 +2098,7 @@ export default function SolarERPApp({
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-gray-600">Payment Due Date *</label>
+                <label className="font-semibold text-gray-600">Create Date *</label>
                 <input
                   type="date"
                   required
@@ -1930,47 +2111,38 @@ export default function SolarERPApp({
 
             <span className="font-bold text-gray-700 block border-b border-gray-100 pb-1">Bill of Material Components</span>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 gap-3">
               <div className="space-y-1">
                 <label className="font-semibold text-gray-600">Panel Brand</label>
                 <input type="text" value={quoteForm.panelBrand} onChange={(e) => setQuoteForm({ ...quoteForm, panelBrand: e.target.value })} className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs" />
               </div>
-              <div className="space-y-1">
-                <label className="font-semibold text-gray-600">Panel Wattage</label>
-                <input type="number" value={quoteForm.panelWattage} onChange={(e) => setQuoteForm({ ...quoteForm, panelWattage: e.target.value })} className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs" />
-              </div>
-              <div className="space-y-1">
-                <label className="font-semibold text-gray-600">Panel Quantity</label>
-                <input type="number" value={quoteForm.panelQuantity} onChange={(e) => setQuoteForm({ ...quoteForm, panelQuantity: e.target.value })} className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs" />
-              </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3">
               <div className="space-y-1">
                 <label className="font-semibold text-gray-600">Inverter Brand</label>
                 <input type="text" value={quoteForm.inverterBrand} onChange={(e) => setQuoteForm({ ...quoteForm, inverterBrand: e.target.value })} className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs" />
-              </div>
-              <div className="space-y-1">
-                <label className="font-semibold text-gray-600">Inverter Model</label>
-                <input type="text" value={quoteForm.inverterModel} onChange={(e) => setQuoteForm({ ...quoteForm, inverterModel: e.target.value })} className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs" />
               </div>
             </div>
 
             <span className="font-bold text-gray-700 block border-b border-gray-100 pb-1">Dynamic Cost Adjustments (INR)</span>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="font-semibold text-gray-600">Material Cost</label>
-                <input type="number" value={quoteForm.materialCost} onChange={(e) => setQuoteForm({ ...quoteForm, materialCost: e.target.value })} className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs" />
+                <label className="font-semibold text-gray-600">Project Cost (Excl. GST)</label>
+                <input type="number" value={quoteForm.projectCost} onChange={(e) => setQuoteForm({ ...quoteForm, projectCost: e.target.value })} className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs font-semibold" />
               </div>
               <div className="space-y-1">
-                <label className="font-semibold text-gray-600">Labour Cost</label>
-                <input type="number" value={quoteForm.labourCost} onChange={(e) => setQuoteForm({ ...quoteForm, labourCost: e.target.value })} className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs" />
+                <label className="font-semibold text-gray-600">GST Percentage (%)</label>
+                <input type="number" value={quoteForm.gstRate} onChange={(e) => setQuoteForm({ ...quoteForm, gstRate: e.target.value })} className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs font-semibold" />
               </div>
-              <div className="space-y-1">
-                <label className="font-semibold text-gray-600">Target Profit Margin</label>
-                <input type="number" value={quoteForm.profit} onChange={(e) => setQuoteForm({ ...quoteForm, profit: e.target.value })} className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs" />
-              </div>
+            </div>
+
+            <div className="mt-3 bg-blue-50/60 p-3 rounded-xl border border-blue-100/50 flex justify-between items-center">
+              <span className="font-bold text-gray-700">Estimated Grand Total:</span>
+              <span className="text-lg font-black text-[#1E3A8A]">
+                ₹{((parseFloat(quoteForm.projectCost || 0)) + (parseFloat(quoteForm.projectCost || 0) * parseFloat(quoteForm.gstRate || 0) / 100)).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+              </span>
             </div>
 
             <div className="flex justify-end gap-2 pt-2">
@@ -1983,8 +2155,8 @@ export default function SolarERPApp({
 
       {/* PAYMENT DIALOG MODAL */}
       {isPaymentModalOpen && (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-6">
-          <form onSubmit={handleCreatePayment} className="bg-white rounded-2xl w-full max-w-md p-6 space-y-4 premium-shadow text-xs">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-start justify-center z-50 p-4 sm:p-6 overflow-y-auto">
+          <form onSubmit={handleCreatePayment} className="bg-white rounded-2xl w-full max-w-md p-6 space-y-4 premium-shadow text-xs my-8">
             <h3 className="text-sm font-bold text-gray-900">Record Client Payment</h3>
 
             <div className="flex items-center gap-2 pb-1">
@@ -2006,20 +2178,16 @@ export default function SolarERPApp({
             {!isManualClientPayment ? (
               <div className="space-y-1">
                 <label className="font-semibold text-gray-600">Select Client *</label>
-                <select
+                <CustomSelect
                   required={!isManualClientPayment}
                   value={paymentForm.clientId}
-                  onChange={(e) => setPaymentForm({ ...paymentForm, clientId: e.target.value })}
-                  className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs"
-                >
-                  <option value="">-- Select Client --</option>
-                  {clients.map(c => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
-                  ))}
-                </select>
+                  onChange={(val) => setPaymentForm({ ...paymentForm, clientId: val })}
+                  options={clients.map(c => ({ value: c.id, label: c.name }))}
+                  placeholder="-- Select Client --"
+                />
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-3 p-3 bg-gray-50 border border-gray-100 rounded-xl">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-gray-50 border border-gray-100 rounded-xl">
                 <div className="space-y-1">
                   <label className="font-semibold text-gray-600">Client Name *</label>
                   <input
@@ -2045,7 +2213,7 @@ export default function SolarERPApp({
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
                 <label className="font-semibold text-gray-600">Amount Received (₹) *</label>
                 <input
@@ -2058,16 +2226,18 @@ export default function SolarERPApp({
               </div>
               <div className="space-y-1">
                 <label className="font-semibold text-gray-600">Payment Mode</label>
-                <select
+                <CustomSelect
+                  required={false}
                   value={paymentForm.paymentMode}
-                  onChange={(e) => setPaymentForm({ ...paymentForm, paymentMode: e.target.value })}
-                  className="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs"
-                >
-                  <option value="CASH">CASH</option>
-                  <option value="UPI">UPI</option>
-                  <option value="CHEQUE">CHEQUE</option>
-                  <option value="BANK_TRANSFER">Bank Transfer (NEFT/RTGS)</option>
-                </select>
+                  onChange={(val) => setPaymentForm({ ...paymentForm, paymentMode: val })}
+                  options={[
+                    { value: "CASH", label: "CASH" },
+                    { value: "UPI", label: "UPI" },
+                    { value: "CHEQUE", label: "CHEQUE" },
+                    { value: "BANK_TRANSFER", label: "Bank Transfer (NEFT/RTGS)" }
+                  ]}
+                  placeholder="Select Payment Mode"
+                />
               </div>
             </div>
 
@@ -2091,8 +2261,8 @@ export default function SolarERPApp({
 
       {/* CLIENT DETAILS LEDGER MODAL */}
       {isClientDetailOpen && selectedClient && (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-6">
-          <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[85vh] overflow-y-auto premium-shadow flex flex-col text-xs">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-start justify-center z-50 p-4 sm:p-6 overflow-y-auto">
+          <div className="bg-white rounded-2xl w-full max-w-4xl premium-shadow overflow-hidden flex flex-col my-8 text-xs">
             <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
               <div>
                 <h2 className="text-lg font-bold text-gray-900">{selectedClient.name} Ledger File</h2>
@@ -2170,8 +2340,8 @@ export default function SolarERPApp({
 
       {/* OVERDUE DIALOG MODAL */}
       {isOverdueModalOpen && (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-6">
-          <form onSubmit={handleSaveOverdueRecord} className="bg-white rounded-2xl w-full max-w-md p-6 space-y-4 premium-shadow text-xs">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-start justify-center z-50 p-6 overflow-y-auto">
+          <form onSubmit={handleSaveOverdueRecord} className="bg-white rounded-2xl w-full max-w-md p-6 space-y-4 premium-shadow text-xs my-8">
             <h3 className="text-sm font-bold text-gray-900">
               {editingOverdueRecord ? 'Edit Overdue Record' : 'Add Overdue Record'}
             </h3>
@@ -2188,7 +2358,7 @@ export default function SolarERPApp({
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
                 <label className="font-semibold text-gray-600">Proposal Number</label>
                 <input
@@ -2210,7 +2380,7 @@ export default function SolarERPApp({
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="space-y-1">
                 <label className="font-semibold text-gray-600">Total Amount (₹) *</label>
                 <input
