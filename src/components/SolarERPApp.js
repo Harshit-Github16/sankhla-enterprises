@@ -7,6 +7,7 @@ import {
   X, FileUp, CheckSquare, Wrench, UserCheck, ShieldAlert, Menu, Calendar,
   LayoutDashboard, TrendingUp, PieChart
 } from 'lucide-react';
+
 import { useStore } from '@/lib/store';
 import { useRouter } from 'next/navigation';
 
@@ -695,6 +696,8 @@ export default function SolarERPApp({
     setDeferredPrompt(null);
   };
 
+
+
   // --- INVENTORY HANDLERS ---
   const handleCreateInventoryItem = async (e) => {
     e.preventDefault();
@@ -933,7 +936,7 @@ export default function SolarERPApp({
         </div>
 
         {/* Floating Toast Notification Box on Login Screen */}
-        <div className="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none">
+        <div className="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none print:hidden">
           {toasts.map(toast => (
             <div key={toast.id} className="p-4 rounded-md shadow-lg border text-sm flex items-center gap-3 bg-white pointer-events-auto border-emerald-200 text-emerald-800">
               <CheckCircle className="h-4 w-4 text-emerald-600" />
@@ -947,10 +950,10 @@ export default function SolarERPApp({
   }
 
   return (
-    <div className="flex h-screen bg-[#FAFBFC] overflow-hidden text-[#111827]">
+    <div className="flex h-screen bg-[#FAFBFC] overflow-hidden text-[#111827] print:block print:h-auto print:overflow-visible print:bg-white">
 
       {/* Toast notifications */}
-      <div className="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none">
+      <div className="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none print:hidden">
         {toasts.map(toast => (
           <div key={toast.id} className="p-4 rounded-md shadow-lg border text-sm flex items-center gap-3 bg-white pointer-events-auto border-emerald-200 text-emerald-800">
             <CheckCircle className="h-4 w-4 text-emerald-600" />
@@ -970,7 +973,7 @@ export default function SolarERPApp({
 
       {/* SIDEBAR NAVIGATION */}
       <aside className={`fixed inset-y-0 left-0 z-40 w-64 border-r border-[#E5E7EB] bg-white flex flex-col justify-between shrink-0 transform transition-transform duration-300 md:static md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}>
+        } print:hidden`}>
         <div>
           {/* Header info */}
           <div className="p-5 border-b border-[#E5E7EB] flex items-center justify-between">
@@ -1043,7 +1046,7 @@ export default function SolarERPApp({
       </aside>
 
       {/* WORKSPACE AREA */}
-      <main className="flex-1 flex flex-col overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50 relative">
+      <main className="flex-1 flex flex-col overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50 relative print:block print:h-auto print:overflow-visible print:bg-white">
         {/* Decorative background blobs for inner pages */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
           <div className="absolute -top-24 -left-24 w-[500px] h-[500px] bg-blue-200/40 rounded-full blur-[100px]"></div>
@@ -1052,7 +1055,7 @@ export default function SolarERPApp({
         </div>
 
         {/* Top Header (bg-white ensures it stays solid) */}
-        <header className="h-16 border-b border-[#E5E7EB] bg-white flex items-center justify-between px-6 shrink-0 relative z-10">
+        <header className="h-16 border-b border-[#E5E7EB] bg-white flex items-center justify-between px-6 shrink-0 relative z-10 print:hidden">
           <div className="flex items-center gap-4">
             {/* Hamburger menu for mobile */}
             <button
@@ -1668,7 +1671,7 @@ export default function SolarERPApp({
                                   setTimeout(() => window.print(), 500);
                                 }}
                                 className="p-1.5 bg-green-50 hover:bg-green-100 rounded-md text-green-600 transition-colors border border-green-100 shadow-sm flex items-center justify-center"
-                                title="Download / Print PDF"
+                                title="Download PDF"
                               >
                                 <Download className="h-4 w-4" />
                               </button>
@@ -1703,8 +1706,8 @@ export default function SolarERPApp({
 
           {/* QUOTATION PREVIEW & PRINT */}
           {previewQuote && (
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
+            <div className="space-y-6 print:space-y-0">
+              <div className="flex items-center justify-between print:hidden">
                 <button onClick={() => setPreviewQuote(null)} className="text-xs font-bold text-[#1E3A8A] hover:underline flex items-center gap-1">
                   &larr; Back to Quotation list
                 </button>
